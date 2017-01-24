@@ -54,21 +54,21 @@
     "subnet1AddressRange": {
       "type": "string",
       "metadata": {
-        "Description": "Numéro du réseau du premier subnet"
+        "Description": "Numéro réseau du premier subnet"
       },
       "defaultValue": "10.0.0.0/24"
     },
     "subnetName2": {
       "type": "string",
       "metadata": {
-        "Description": "Nom du Subnet deuxième subnet"
+        "Description": "Nom du deuxième subnet"
       },
       "defaultValue": "Subnet-Front"
     },
     "subnet2AddressRange": {
       "type": "string",
       "metadata": {
-        "Description": "Numéro du réseau du deuxième subnet"
+        "Description": "Numéro réseau du deuxième subnet"
       },
       "defaultValue": "10.0.1.0/24"
     },
