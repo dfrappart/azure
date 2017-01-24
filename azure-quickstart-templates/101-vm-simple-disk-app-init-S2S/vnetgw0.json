@@ -1,0 +1,94 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Virtual Network to Create"
+      }
+    },
+    "virtualNetworkAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the new VNET in CIDR format"
+      },
+      "defaultValue": "10.0.0.0/16"
+    },
+    "subnetName1": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the subnet created in the new VNET"
+      }
+    },
+    "subnet1AddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the subnet created in the new VNET"
+      },
+      "defaultValue": "10.0.0.0/24"
+    },
+    "subnetName2": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the subnet created in the new VNET"
+      }
+    },
+    "subnet2AddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the subnet created in the new VNET"
+      },
+      "defaultValue": "10.0.1.0/24"
+    },
+    "subnetNameGW": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the subnet created for Gateway"
+      }      
+    },
+    "subnetAddressRangeGW": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the subnet created in the new VNET"
+      },
+      "defaultValue": "10.0.2.0/24"
+    }
+    
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('virtualNetworkName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkAddressRange')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('subnetName1')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnet1AddressRange')]"
+            }
+          },
+          {
+            "name": "[parameters('subnetName2')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnet2AddressRange')]"
+            }
+          },
+          {
+            "name": "[parameters('subnetNameGW')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetAddressRangeGW')]"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
