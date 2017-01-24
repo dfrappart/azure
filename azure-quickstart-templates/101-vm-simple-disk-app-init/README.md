@@ -12,9 +12,7 @@ Le template déploie :
 
 
 
-##Création d'un "resource group":
-$rgName = 'mon-ResourceGroupName'
-$Location = 'West europe'
+##Création d'un "Resource Group":
 New-AzureRmResourceGroup -Name $rgName -Location $location 
 
 
