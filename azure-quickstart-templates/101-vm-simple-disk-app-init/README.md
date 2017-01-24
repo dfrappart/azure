@@ -7,7 +7,7 @@ Le template déploie :
 - Un "Load Balancer" avec un "Inbound nat rule" 5001 (RDP de la VM)
 - Une carte réseau
 - Une VM avec un disque supplémentaire avec son initialisation et son formatage sous Windows
-- Initialise le disque et formate via PowerShell DSC
+- Initialise le disque et le formate via PowerShell DSC
 - Un "Network Sécurity Group" TCP 3389 inbound sur la carte réseau de la vm
 
 
