@@ -22,7 +22,6 @@
         "description": "prefix DNS de l'IP publique utilisée par le Load Balancer"
       },
       "defaultValue": "fqdnpocv1"
-
     },
     "adAvailabilitySetName": {
       "type": "string",
