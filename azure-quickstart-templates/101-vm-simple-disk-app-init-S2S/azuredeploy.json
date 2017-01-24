@@ -7,7 +7,7 @@
       "metadata": {
         "Description": "Nom du compte de stockage (3 à 24 caractères en minuscules)"
       },
-      "defaultValue": "storagepocv1"
+      "defaultValue": "storagepocv01"
     },
     "publicIPAddressName": {
       "type": "string",
