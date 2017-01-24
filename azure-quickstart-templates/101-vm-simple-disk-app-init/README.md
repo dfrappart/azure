@@ -13,7 +13,7 @@ Le template déploie :
 - Un compte de stockage
 - Un "Virtual Network" et deux subnets
 - Une "IP publique" pour le "Load Balancer"
-- Un "Load Balancer" avec un "Inbound nat rule" 5001 (RDP de la VM)
+- Un "Load Balancer" avec un "Inbound nat rule" TCP 5001 (RDP de la VM)
 - Une carte réseau
 - Une VM avec un disque supplémentaire avec son initialisation et son formatage sous Windows
 - Initialise le disque et le formate via PowerShell DSC
