@@ -1,7 +1,7 @@
 {
-  "itemDisplayName": "Déploiement d'une VM Windows Server 2012r2/2016",
-  "description": "Exemple de déploiement d'une simple VM Windows Server avec un disque supplémentaire (initialisé et formaté sous Windows)",
-  "summary": "Ce template prends quelque minutes pour déployer un Windows Server avec un disque Suppl",
+  "itemDisplayName": "Déploiement d'une VM Windows Server avec un VPN S2S",
+  "description": "Exemple de déploiement d'une simple VM Windows Server avec un disque supplémentaire (initialisé et formaté sous Windows) avec un VPN IPsec",
+  "summary": "Ce template prends environ 45 minutes pour déployer un Windows Server avec un disque Suppl plus un VPN IPsec",
   "githubUsername": "Pierre-Chesne",
   "dateUpdated": "2016-01-24"
 }
