@@ -185,8 +185,7 @@
       "type": "string",
       "metadata": {
         "description": "Nom du compte admin local"
-      },
-      "defaultValue": "pierrc"
+      }      
     },
     "adminPassword": {
       "type": "securestring",
