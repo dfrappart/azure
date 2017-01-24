@@ -3,10 +3,13 @@
 Le template déploie :
 - Un compte de stockage
 - Un "Virtual Network" et deux subnets
+- Une "IP publique" pour le "Load Balancer"
 - Un "Load Balancer" avec un "Inbound net rule" 5001 (RDP de la VM)
 - une carte réseau
 - une VM avec un disque supplémentaire avec son initialisation et son formatage sous Windows
+- Initialise le disque et formate via PowerShell DSC
 - un "Network Sécurity Group" TCP 3389 inbound sur la carte réseau
+
 
 
 ##Création d'un "resource group":
@@ -17,7 +20,7 @@ New-AzureRmResourceGroup -Name $rgName -Location $location
 New-AzureRmResourceGroupDeployment `
 -Name DeployLab `
 -ResourceGroupName $rgName `
--TemplateFile C:\code\LabARMPocv1\azuredeploy.json `
--TemplateParameterFile C:\code\LabARMPocv1\azuredeploy.parameters.json `
+-TemplateFile .\azuredeploy.json `
+-TemplateParameterFile .\azuredeploy.parameters.json `
 -Verbose
 

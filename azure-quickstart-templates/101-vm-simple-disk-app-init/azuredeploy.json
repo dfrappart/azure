@@ -93,7 +93,7 @@
     "NicIPAddress": {
       "type": "string",
       "metadata": {
-        "Description": "Adresse IP de la carte du DC (x.x.x.4 dans le subnet)"
+        "Description": "Adresse IP de la carte (x.x.x.4 dans le subnet)"
       },
       "defaultValue": "10.0.0.4"
     },
@@ -123,8 +123,7 @@
       "type": "string",
       "metadata": {
         "description": "Nom du compte admin local"
-      },
-      "defaultValue": "pierrc"
+      }      
     },
     "adminPassword": {
       "type": "securestring",
@@ -148,10 +147,10 @@
     "adLBFE": "LBFE",
     "adLBBE": "LBBE",
     "adRDPNAT": "adRDP",
-    "networkSecurityGroupName": "NSG-APP",
+    "networkSecurityGroupName": "NSG-App",
     "NicName": "Nic-0",
     "vmExtensionName": "dscExtension",
-    "modulesUrl": "http://repository001.blob.core.windows.net/dsc/Disk.zip",
+    "modulesUrl": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/101-vm-simple-disk-app-init/Disk.zip",    
     "configurationFunction": "Disk.ps1\\Disk"
   },
 "resources": [    
