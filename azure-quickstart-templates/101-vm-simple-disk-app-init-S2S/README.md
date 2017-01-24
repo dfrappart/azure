@@ -22,6 +22,7 @@ Le template déploie :
 - Un "Network Sécurity Group" TCP 3389 inbound sur la carte réseau de la vm
 - Update du VNet avec le DNS de l'ADDS 
 
+Il faudra redémarrer la VM pour qu'elle récupère le bon server DNS
 
 
 ##Création d'un "Resource Group":
