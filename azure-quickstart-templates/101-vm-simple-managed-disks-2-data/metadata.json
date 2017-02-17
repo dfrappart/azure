@@ -1,0 +1,7 @@
+{
+  "itemDisplayName": "Déploiement d'une VM Windows Server 2012r2/2016",
+  "description": "Exemple de déploiement d'une simple VM Windows Server avec deux disques supplémentaires en 'Managed Disks' (initialisé et formaté sous Windows)",
+  "summary": "Ce template prends quelque minutes pour déployer un Windows Server avec deux disques Suppl",
+  "githubUsername": "Pierre-Chesne",
+  "dateUpdated": "2016-02-17"
+}

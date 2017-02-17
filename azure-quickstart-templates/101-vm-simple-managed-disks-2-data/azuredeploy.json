@@ -1,0 +1,413 @@
+﻿{
+   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "parameters": {
+     "publicIPAddressName":{
+       "type": "string",
+       "metadata": {
+         "description":"Nom de l'Ip Publique"
+       },
+       "defaultValue": "Ip-Public-App"
+     },
+     "dnsLabelPrefix":{
+       "type": "string",
+       "metadata": {
+         "description":"FQDN de l'IP Publique "
+       },
+       "defaultValue": "fqdnapp"
+     },
+     "AvailabilitySetName":{
+        "type": "string",
+        "metadata": {
+           "Description": "Nom du groupe de disponibilité"
+        },
+        "defaultValue": "Av-App"
+     },
+     "virtualNetworkName":{
+        "type": "string",
+        "metadata": {
+            "Descrition":"Nom du VirtualNetwork"
+        },
+        "defaultValue": "Vnet-App"
+     },
+     "virtualNetworkAddressRange":{
+        "type": "string",
+        "metadata": {
+            "Description":"Plan d'adressage de Vnet"
+        },
+        "defaultValue": "10.0.0.0/16"
+     },
+     "subnetName1":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du premier subnet"
+        },
+        "defaultValue": "Subnet-Front"
+     },
+     "subnet1AddressRange":{
+        "type": "string",
+        "metadata": {
+            "Description":"Numéro de réseau du premier subnet"
+        },
+        "defaultValue": "10.0.0.0/24"
+     },
+     "LBName":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du Load Balancer"
+        },
+        "defaultValue": "LB-App"
+     },
+     "NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "Description": "Adresse IP de la carte (x.x.x.4 dans le subnet)"
+      },
+      "defaultValue": "10.0.0.4"
+     },
+     "ManagedDataDisk0":{
+      "type": "string",
+      "metadata": {
+        "description":"Nom du disque Data 0"
+      },
+      "defaultValue": "DataDisk0-Vm-App"
+     },
+     "SizeDataDisk0":{
+       "type": "int",
+       "metadata": {
+         "description":"Taille du disque Data 0 (Gb)"
+       },
+       "allowedValues": [
+         32,
+         64,
+         128,
+         512,
+         1024
+       ],
+       "defaultValue": 64
+     },    
+     "ManagedDataDisk1":{
+      "type": "string",
+      "metadata": {
+        "description":"Nom du disque Data 1"
+      },
+      "defaultValue": "DataDisk1-Vm-App"
+     },
+     "SizeDataDisk1":{
+       "type": "int",
+       "metadata": {
+         "description":"Taille du disque Data 1 (Gb)"
+       },
+       "allowedValues": [
+         32,
+         64,
+         128,
+         512,
+         1024
+       ],
+       "defaultValue": 64
+     },
+     "storageAccountType":{
+      "type": "string",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS"
+      ],
+      "defaultValue": "Standard_LRS"
+     },
+     "VMName": {
+      "type": "string",
+      "metadata": {
+        "Description": "Nom de la VM"
+      },
+      "defaultValue": "VM-App"
+     },
+     "vmSize": {
+      "type": "string",
+      "metadata": {
+        "Description": "Taille de la VM"
+      },
+      "allowedValues": [
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_A1_v2",
+        "Standard_A2_v2",
+        "Standard_F1",
+        "Standard_F2"
+      ],
+      "defaultValue": "Standard_F1"
+     },
+     "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du compte admin local"
+      }      
+     },
+     "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Mot de passe du compte admin local"
+      }
+     },
+     "windowsserver": {
+      "type": "string",
+      "metadata": {
+        "description": "Version de l'édition de Windows Server"
+      },
+      "defaultValue": "2012-R2-Datacenter",
+      "allowedValues": [
+        "2012-R2-Datacenter",
+        "2016-Datacenter"
+      ]
+     }
+    },
+   "variables": {
+     "adLBFE": "LBFE",
+    "adLBBE": "LBBE",
+    "vmRDPNAT": "vmRDP",
+    "networkSecurityGroupName": "NSG-App",
+    "NicName": "Nic-0"
+     },
+   "resources": [
+     {
+       "type": "Microsoft.Network/publicIPAddresses",
+       "name": "[parameters('publicIPAddressName')]",
+       "apiVersion": "2016-03-30",
+       "location":"[resourceGroup().location]",
+       "properties": {
+         "dnsSettings":{
+           "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+         },
+         "publicIPAllocationMethod":"Static"
+       }
+     },
+     {
+        "type": "Microsoft.Compute/availabilitySets",
+        "name": "[parameters('AvailabilitySetName')]",
+        "apiVersion": "2016-04-30-preview",
+        "location":"[resourceGroup().location]",
+        "properties": {
+            "platformFaultDomainCount":3,
+            "platformUpdateDomainCount":5,
+            "managed": true
+
+        }
+     },
+     {
+        "type": "Microsoft.Network/virtualNetworks",
+        "name": "[parameters('virtualNetworkName')]",
+        "apiVersion": "2016-03-30",
+        "location":"[resourceGroup().location]",
+        "properties": {
+            "addressSpace":{
+                "addressPrefixes": [
+                    "[parameters('virtualNetworkAddressRange')]"
+                ]                
+            },
+            "subnets":[
+                {
+                    "name": "[parameters('subnetName1')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet1AddressRange')]"
+                    }
+                }
+            ]
+        }
+     },
+     {
+        "type": "Microsoft.Network/loadBalancers",
+        "name": "[parameters('LBName')]",
+        "apiVersion": "2016-03-30",
+        "location":"[resourceGroup().location]",
+        "dependsOn": [
+            "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]"
+        ],
+        "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[variables('adLBFE')]",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('adLBBE')]"
+          }
+        ],
+        "inboundNatRules": [
+          {
+            "name": "[variables('vmRDPNAT')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('LBName'), variables('adLBFE'))]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 5001,
+              "backendPort": 3389,
+              "enableFloatingIP": false
+            }
+          }
+        ]
+      }
+     },
+     {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('networkSecurityGroupName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "RDP",
+            "properties": {
+              "description": "RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"              
+            }
+          }
+        ]
+      }
+     },
+     {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('NicName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+        "[resourceId('Microsoft.Network/loadBalancers', parameters('LBName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups',variables('networkSecurityGroupName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('NicIPAddress')]",
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName1'))]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('LBName'), variables('adLBBE'))]"
+                }
+              ],
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', parameters('LBName'), variables('vmRDPNAT'))]"
+                }
+              ]
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+        }
+      }
+     },
+     {
+      "type": "Microsoft.Compute/disks",
+      "name": "[parameters('ManagedDataDisk0')]",
+      "apiVersion": "2016-04-30-preview",
+      "location":"[resourceGroup().location]",
+      "properties":{
+        "creationData":
+        {
+          "createOption" : "Empty"
+        },
+        "accountType" : "[parameters('storageAccountType')]",
+        "diskSizeGB":"[parameters('SizeDataDisk0')]"
+      } 
+     },
+     {
+      "type": "Microsoft.Compute/disks",
+      "name": "[parameters('ManagedDataDisk1')]",
+      "apiVersion": "2016-04-30-preview",
+      "location":"[resourceGroup().location]",
+      "properties":{
+        "creationData":
+        {
+          "createOption" : "Empty"
+        },
+        "accountType" : "[parameters('storageAccountType')]",
+        "diskSizeGB": "[parameters('SizeDataDisk1')]"
+      } 
+     },
+     {
+       "type": "Microsoft.Compute/virtualMachines",
+       "name": "[parameters('VMName')]",
+       "apiVersion": "2016-04-30-preview",
+       "location": "[resourceGroup().location]",
+       "dependsOn": [        
+        "[resourceId('Microsoft.Compute/disks/', parameters('ManagedDataDisk0'))]",
+        "[resourceId('Microsoft.Compute/disks/', parameters('ManagedDataDisk1'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]",
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetName'))]",
+        "[resourceId('Microsoft.Network/loadBalancers', parameters('LBName'))]"
+      ],
+      "properties": {
+        "hardwareProfile":{
+          "vmSize":  "[parameters('vmSize')]"
+        },
+        "availabilitySet":{
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetName'))]"
+        },
+        "osProfile":{
+          "computerName": "[parameters('VMName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile":{
+          "imageReference":{
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('windowsserver')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat('OsDisk-',parameters('VMName'))]",
+            "createOption": "fromImage"
+          },
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[parameters('ManagedDataDisk0')]",
+              "createOption": "attach",
+              "managedDisk":
+              {
+                "id":  "[resourceId('Microsoft.Compute/disks/', parameters('ManagedDataDisk0'))]"
+              }
+           },
+           {
+              "lun": 3,
+              "name": "[parameters('ManagedDataDisk1')]",
+              "createOption": "attach",
+              "managedDisk":
+              {
+                "id": "[resourceId('Microsoft.Compute/disks/', parameters('ManagedDataDisk1'))]"
+              }
+            }
+          ]   
+        },
+        "networkProfile":{
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+            }
+          ]
+        }        
+      }
+     }
+   ]   
+}
