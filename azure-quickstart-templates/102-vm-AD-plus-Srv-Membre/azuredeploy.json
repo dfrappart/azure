@@ -168,9 +168,9 @@
      "vmRDPNATFile":"vmRDPFILE",
      "NicNameAD": "NicAD-0",
      "NicNameFile": "NicFile-0",
-     "adModulesURL": "https://repository0.blob.core.windows.net/dsc/CreateADPDCv1.zip",
+     "adModulesURL": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/102-vm-AD-plus-Srv-Membre/CreateADPDCv1.zip",
      "adConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
-     "OUModulesURL":"https://repository0.blob.core.windows.net/scripts/AddOu.ps1",
+     "OUModulesURL": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/102-vm-AD-plus-Srv-Membre/AddOu.ps1",
      "scriptFolder": ".",
      "scriptFileName": "AddOu.ps1",
      "OUPath": "OU=FileServer,DC=ma-pme,DC=local"
