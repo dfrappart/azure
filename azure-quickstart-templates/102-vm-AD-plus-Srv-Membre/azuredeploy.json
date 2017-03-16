@@ -68,7 +68,7 @@
     "FileNicIPAddress": {
       "type": "string",
       "metadata": {
-        "Description": "Adresse IP de la carte (x.x.x.4 dans le subnet)"
+        "Description": "Adresse IP de la carte (x.x.x.5 dans le subnet)"
       },
       "defaultValue": "10.0.0.5"
     },
@@ -206,7 +206,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://repository0.blob.core.windows.net/json/vnet-app.json",
+          "uri": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/vnet-app.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -483,7 +483,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://repository0.blob.core.windows.net/json/vnet-app-dns.json",
+          "uri": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/vnet-app-dns.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {

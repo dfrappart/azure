@@ -19,7 +19,7 @@ Le template déploie :
 - un disque suplémentaire pour le SysVol initialisé et formaté pour l'AD (en "managed disk")
 - une VM "Controleur de domaine" avec attache du disque "Sysvol"
 - Creation de trois OU
-- Une VM membre du domaine qui rentre dans une des trois OU
+- Une VM membre du domaine qui rentre dans une des trois OU (redémarer la VM à la fin du déploiement)
 
 
 ##Création d'un "Resource Group":
