@@ -17,7 +17,7 @@ Le template déploie :
 - une carte réseau pour le controleur de domaine
 - une carte réseau pour le serveur membre
 - un disque suplémentaire pour le SysVol initialisé et formaté pour l'AD (en "managed disk")
-- une VM "Controleur de domaine" avec attache du disque "Sysvol"
+- une VM "Controleur de domaine" avec un attachement du disque "Sysvol"
 - Creation de trois OU
 - Une VM membre du domaine qui rentre dans une des trois OU (redémarer la VM à la fin du déploiement)
 

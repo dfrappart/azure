@@ -206,7 +206,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/vnet-app.json",
+          "uri": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/102-vm-AD-plus-Srv-Membre/vnet-app.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -483,7 +483,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/vnet-app-dns.json",
+          "uri": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/102-vm-AD-plus-Srv-Membre/vnet-app-dns.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
