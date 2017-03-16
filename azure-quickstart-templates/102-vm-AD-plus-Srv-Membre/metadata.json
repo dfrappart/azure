@@ -1,0 +1,7 @@
+{
+  "itemDisplayName": "Déploiement d'un contrôleur de domaine avec un serveur membre",
+  "description": "Exemple de déploiement d'un contrôleur de domaine avec un serveur membre",
+  "summary": "Ce template prends 30 minutes pour un AD plus un serveur membre",
+  "githubUsername": "Pierre-Chesne",
+  "dateUpdated": "2016-03-16"
+}

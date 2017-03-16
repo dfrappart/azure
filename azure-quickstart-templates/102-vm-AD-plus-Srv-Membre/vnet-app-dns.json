@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du Virtual Network"
+      }
+    },
+    "virtualNetworkAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "Plan d'adressage du Virtual Network format CIDR"
+      }
+      
+    },
+    "APPsubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du subnet du Subnet"
+      }
+    },
+    "APPSubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Numéro de réseau du subnet"
+      }      
+    },
+      "DNSServerAddress": {
+      "type": "array",
+      "metadata": {
+        "description": "Adresse du DNS dans le Virtual Network"
+      }
+    }    
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('virtualNetworkName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkAddressRange')]"
+          ]
+        },
+        "dhcpOptions":{
+          "dnsServers": "[parameters('DNSServerAddress')]"  
+        },
+        "subnets": [
+          {
+            "name": "[parameters('APPsubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('APPSubnetAddressPrefix')]"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
