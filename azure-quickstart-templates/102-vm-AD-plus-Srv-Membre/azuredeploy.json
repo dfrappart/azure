@@ -168,12 +168,16 @@
      "vmRDPNATFile":"vmRDPFILE",
      "NicNameAD": "NicAD-0",
      "NicNameFile": "NicFile-0",
+     "networkSecurityGroupName":"NSG-RDP",
      "adModulesURL": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/102-vm-AD-plus-Srv-Membre/CreateADPDCv1.zip",
      "adConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
      "OUModulesURL": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/102-vm-AD-plus-Srv-Membre/AddOu.ps1",
      "scriptFolder": ".",
      "scriptFileName": "AddOu.ps1",
-     "OUPath": "OU=FileServer,DC=ma-pme,DC=local"
+     "OUPath": "OU=FileServer,DC=ma-pme,DC=local",
+     "vmExtensionName": "dscExtension",
+     "modulesUrl": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/102-vm-AD-plus-Srv-Membre/Disk.zip", 
+     "configurationFunction": "Disk.ps1\\Disk"
   },
    "resources": [
      {
@@ -279,13 +283,38 @@
       }
      },
      {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('networkSecurityGroupName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "RDP",
+            "properties": {
+              "description": "RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+     },
+     {
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('NicNameAD')]",
       "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "Microsoft.Resources/deployments/VNet",
-        "[resourceId('Microsoft.Network/loadBalancers', parameters('LBName'))]"
+        "[resourceId('Microsoft.Network/loadBalancers', parameters('LBName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -309,7 +338,10 @@
               ]
             }
           }
-        ]
+        ],
+        "networkSecurityGroup":{
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+        }
       }
      },
      {
@@ -319,7 +351,8 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "Microsoft.Resources/deployments/VNet",
-        "[resourceId('Microsoft.Network/loadBalancers', parameters('LBName'))]"
+        "[resourceId('Microsoft.Network/loadBalancers', parameters('LBName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -343,7 +376,10 @@
               ]
             }
           }
-        ]
+        ],
+        "networkSecurityGroup":{
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+        }
       }
      },
      {
@@ -365,11 +401,10 @@
       "name": "[parameters('VMNameAAD0')]",
       "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
-      "dependsOn": [        
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetName'))]",        
         "[resourceId('Microsoft.Compute/disks/', concat('SysVolDisk-',parameters('VMNameAAD0')))]",
-        "[resourceId('Microsoft.Network/networkInterfaces', variables('NicNameAD'))]",
-        "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetName'))]",
-        "[resourceId('Microsoft.Network/loadBalancers', parameters('LBName'))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('NicNameAD'))]"
            ],
       "properties": {
       "hardwareProfile":{
@@ -508,18 +543,31 @@
        }
      },
      {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat('DataDisk-',parameters('VMNameFile'))]",
+      "apiVersion": "2016-04-30-preview",
+      "location":"[resourceGroup().location]",
+      "properties":{
+        "creationData":
+        {
+          "createOption" : "Empty"
+        },
+        "accountType" : "[parameters('storageAccountType')]",
+        "diskSizeGB":1023
+      } 
+     },
+     {
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('VMNameFile')]",
       "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
-      "dependsOn": [       
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetName'))]",       
+        "[resourceId('Microsoft.Compute/disks', concat('DataDisk-',parameters('VMNameFile')) )]",
         "[resourceId('Microsoft.Network/networkInterfaces', variables('NicNameFile'))]",
-        "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetName'))]",
         "[resourceId('Microsoft.Network/loadBalancers', parameters('LBName'))]",
-        "[resourceId('Microsoft.Resources/deployments', 'UpdateVNetDNS')]",
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('VMNameAAD0'))]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions',  parameters('VMNameAAD0'), 'dsc')]"
-           ],
+        "[resourceId('Microsoft.Resources/deployments', 'UpdateVNetDNS')]"
+        ],
       "properties": {
       "hardwareProfile":{
           "vmSize":  "[parameters('vmSizeFile')]"
@@ -543,7 +591,18 @@
             "name": "[concat('OsDisk-',parameters('VMNameFile'))]",
             "createOption": "fromImage"
           },
-          "dataDisks": []   
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[concat('DataDisk-',parameters('VMNameFile'))]",
+              
+              "createOption": "attach",
+              "managedDisk":
+              {
+                "id":  "[resourceId('Microsoft.Compute/disks', concat('DataDisk-',parameters('VMNameFile')) )]"
+              }
+           }
+          ]   
         },
         "networkProfile":{
           "networkInterfaces": [
@@ -553,7 +612,9 @@
           ]
         }        
         },
-        "resources": []
+        "resources": [
+
+        ]
      },
      {
       "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -561,13 +622,7 @@
       "name": "[concat(parameters('VMNameFile'),'/joindomain')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', variables('NicNameFile'))]",
-        "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetName'))]",
-        "[resourceId('Microsoft.Network/loadBalancers', parameters('LBName'))]",
-        "[resourceId('Microsoft.Resources/deployments', 'UpdateVNetDNS')]",
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('VMNameAAD0'))]",
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('VMNameFile'))]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions',  parameters('VMNameAAD0'), 'dsc')]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('VMNameFile'))]"
       ],
       "properties": {
         "publisher": "Microsoft.Compute",
@@ -586,6 +641,30 @@
           "Password": "[parameters('adminPassword')]"
         }
       }
-     }
-  ]
+     },
+     {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('VMNamefile'),'/', variables('vmExtensionName'))]",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('VMNamefile'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.19",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+
+          "ModulesUrl": "[variables('modulesUrl')]",
+          "ConfigurationFunction": "[variables('configurationFunction')]",
+          "Properties": {
+            "MachineName": "[parameters('VMNamefile')]"
+          }
+        },
+        "protectedSettings": null
+      }
+    }
+   ]
 }
