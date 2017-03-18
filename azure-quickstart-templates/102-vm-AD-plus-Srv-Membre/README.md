@@ -10,17 +10,17 @@
 
 
 Le template déploie :
-•	Un "Virtual Network"
-•	Un "Groupe de disponibilité"
-•	Une "IP Publique"
-•	Un "Load Balancer" avec deux "inbound Nat Rules" TCP 5001 et 5002 pour la prise de main à distance du Contrôleur de domaine et du Serveur membre
-•	une carte réseau pour le contrôleur de domaine
-•	une carte réseau pour le serveur membre
-•	« Network Secutity Group » sur les cartes réseaux (TCP 3389) 
-•	un disque suplémentaire pour le SysVol initialisé et formaté pour l'AD (en "managed disk")
-•	une VM "Controleur de domaine" avec un attachement du disque "Sysvol" , et toute l’active directory de provisionnée.
-•	Creation de trois OU
-•	Une VM membre du domaine qui rentre dans une des trois OU (redémarer la VM à la fin du déploiement) avec un disque de 1 To en « Managed Disk »
+- Un "Virtual Network"
+- Un "Groupe de disponibilité"
+- Une "IP Publique"
+- Un "Load Balancer" avec deux "inbound Nat Rules" TCP 5001 et 5002 pour la prise de main à distance du Contrôleur de domaine et du Serveur membre
+- une carte réseau pour le contrôleur de domaine
+- une carte réseau pour le serveur membre
+- « Network Secutity Group » sur les cartes réseaux (TCP 3389) 
+- un disque suplémentaire pour le SysVol initialisé et formaté pour l'AD (en "managed disk")
+- une VM "Controleur de domaine" avec un attachement du disque "Sysvol" , et toute l’active directory de provisionnée.
+- Creation de trois OU
+- Une VM membre du domaine qui rentre dans une des trois OU (redémarer la VM à la fin du déploiement) avec un disque de 1 To en « Managed Disk »
 
 
 
