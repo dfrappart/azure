@@ -1,0 +1,1199 @@
+{
+   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "parameters": {
+     "virtualNetworkName":{
+         "type": "string",
+         "metadata": {
+             "Descrition":"Nom du VirtualNetwork OCP"
+        },
+        "defaultValue": "Vnet-OCP"
+     },
+     "virtualNetworkAddressRange":{
+        "type": "string",
+        "metadata": {
+            "Description":"Plan d'adressage de Vnet OCP"
+        },
+        "defaultValue": "10.0.0.0/8"
+     },
+     "subnetName1":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du subnet Subnet Bastion"
+        },
+        "defaultValue": "Subnet-OCPBastion"
+     },
+     "subnet1AddressRange":{
+        "type": "string",
+        "metadata": {
+            "Description":"Numéro de réseau du subnet Bastion"
+        },
+        "defaultValue": "10.0.0.0/16"
+     },
+     "subnetName2":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du subnet Subnet Gluster"
+        },
+        "defaultValue": "Subnet-OCPGluster"
+     },
+     "subnet2AddressRange":{
+        "type": "string",
+        "metadata": {
+            "Description":"Numéro de réseau du subnet Gluster"
+        },
+        "defaultValue": "10.1.0.0/16"
+     },
+     "subnetName3":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du subnet Subnet AppliNode"
+        },
+        "defaultValue": "Subnet-OCPAppliNode"
+     },
+     "subnet3AddressRange":{
+        "type": "string",
+        "metadata": {
+            "Description":"Numéro de réseau du subnet AppliNode"
+        },
+        "defaultValue": "10.2.0.0/16"
+     },
+     "subnetName4":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du subnet Master"
+        },
+        "defaultValue": "Subnet-OCPMaster"
+     },
+     "subnet4AddressRange":{
+        "type": "string",
+        "metadata": {
+            "Description":"Numéro de réseau du subnet Master"
+        },
+        "defaultValue": "10.3.0.0/24"
+     },
+     "subnetName5":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du subnet InfraNode"
+        },
+        "defaultValue": "Subnet-OCPInfraNode"
+     },
+     "subnet5AddressRange":{
+        "type": "string",
+        "metadata": {
+            "Description":"Numéro de réseau du subnet InfraNode"
+        },
+        "defaultValue": "10.3.1.0/24"
+     },
+     "AvailabilitySetNameBastion":{
+        "type": "string",
+        "metadata": {
+           "Description": "Nom du groupe de disponibilité Bastion"
+        },
+        "defaultValue": "AvailabilitySet-OCPBastion"
+     },
+     "publicIPAddressNameBastion":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom de la resource IP Publique Bastion"
+        },
+        "defaultValue": "PublicIP-OCPBastion"
+     },
+     "dnsPrefixBastion":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom Fqdn de l'IP Publique Bastion"
+        },
+        "defaultValue": "fqdnbastion"
+     },
+     "LbBastionName":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du Load Balancer Bastion"
+        },
+        "defaultValue": "LB-OCPBastion"
+     },
+     "NicBastionIPAddress":{
+         "type": "string",
+         "metadata": {
+             "Description":"Adresse IP de la VM Bastion"
+         },
+         "defaultValue": "10.0.0.4"
+     },
+     "VMNameBastion": {
+      "type": "string",
+      "metadata": {
+        "Description": "Nom de la VM Bastion"
+      },
+      "defaultValue": "VM-OCPBastion"
+     },
+     "vmSizeBastion": {
+      "type": "string",
+      "metadata": {
+        "Description": "Taille de la VM Bastion"
+      },
+      "allowedValues": [
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_A1_v2",
+        "Standard_A2_v2",
+        "Standard_F1",
+        "Standard_F2"
+      ],
+      "defaultValue": "Standard_A1_v2"
+     },
+     "adminUsernameBastion": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du compte admin local Bastion"
+      }      
+     },
+      "adminPasswordBastion": {
+       "type": "securestring",
+       "metadata": {
+        "description": "Mot de passe du compte admin local Bastion"
+        }
+     },
+     "AvailabilitySetNameGluster":{
+        "type": "string",
+        "metadata": {
+           "Description": "Nom du groupe de disponibilité Gluster"
+        },
+        "defaultValue": "AvailabilitySet-OCPGluster"
+     },
+     "OCPNGnumberOfInstances":{
+         "type": "int",
+         "metadata": {
+             "Description":"Nombre d'instances de VM Gluster"
+         },
+         "allowedValues":[
+                1,
+                2,
+                3
+            ],
+         "defaultValue": 3
+     },
+     "VMNameOCPNG": {
+       "type": "string",
+       "metadata": {
+        "Description": "Nom de/des VM Gluster"
+      },
+      "defaultValue": "VM-OCPNG-"
+     },
+     "vmSizeOCPNG": {
+      "type": "string",
+      "metadata": {
+        "Description": "Taille de la VM Gluster"
+      },
+      "allowedValues": [
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_A1_v2",
+        "Standard_A2_v2",
+        "Standard_F1",
+        "Standard_F2"
+      ],
+      "defaultValue": "Standard_A1_v2"
+     },
+     "adminUsernameOCPNG": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du compte admin local Gluster"
+      }      
+     },
+     "adminPasswordOCPNG": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Mot de passe du compte admin local Gluster"
+        }
+     },
+     "AvailabilitySetNameInfraNode":{
+        "type": "string",
+        "metadata": {
+           "Description": "Nom du groupe de disponibilité InfraNode"
+        },
+        "defaultValue": "AvailabilitySet-OCPInfraNode"
+     },
+     "publicIPAddressNameInfraNode":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom de la resource IP Publique VM InfraNode"
+        },
+        "defaultValue": "PublicIP-OCPInfraNode"
+     },
+     "dnsPrefixInfraNode":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom Fqdn de l'IP Publique Infra Nodes"
+        },
+        "defaultValue": "fqdninfranode"
+     },
+     "LbInfraNodeName":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du Load Balancer InfraNode"
+        },
+        "defaultValue": "LB-OCPInfraNode"
+     },
+     "OCPNInumberOfInstances":{
+         "type": "int",
+         "metadata": {
+             "Description":"Nombre d'instances de VM OCPNI"
+         },
+         "allowedValues":[
+                1,
+                2,
+                3
+            ],
+         "defaultValue": 3
+     },
+     "VMNameOCPNI": {
+       "type": "string",
+       "metadata": {
+        "Description": "Nom de/des VM InfraNode"
+      },
+      "defaultValue": "VM-OCPNI-"
+     },
+     "vmSizeOCPNI": {
+      "type": "string",
+      "metadata": {
+        "Description": "Taille de la VM"
+      },
+      "allowedValues": [
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_A1_v2",
+        "Standard_A2_v2",
+        "Standard_F1",
+        "Standard_F2"
+      ],
+      "defaultValue": "Standard_A1_v2"
+     },
+     "adminUsernameOCPNI": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du compte admin local InfraNode"
+      }      
+     },
+     "adminPasswordOCPNI": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Mot de passe du compte admin local Infra Node"
+        }
+     },
+     "AvailabilitySetNameMaster":{
+        "type": "string",
+        "metadata": {
+           "Description": "Nom du groupe de disponibilité Master"
+        },
+        "defaultValue": "AvailabilitySet-OCPMaster"
+     },
+     "publicIPAddressNameMaster":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom de la resource IP Publique VM Master"
+        },
+        "defaultValue": "PublicIP-OCPMaster"
+     },
+     "dnsPrefixMaster":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom Fqdn de l'IP Publique Master"
+        },
+        "defaultValue": "fqdnmaster"
+     },
+     "LbMasterName":{
+        "type": "string",
+        "metadata": {
+            "Description":"Nom du Load Balancer Master"
+        },
+        "defaultValue": "LB-OCPMaster"
+     },
+     "OCPMasternumberOfInstances":{
+         "type": "int",
+         "metadata": {
+             "Description":"Nombre d'instances de VM Master"
+         },
+         "allowedValues":[
+                1,
+                2,
+                3
+            ],
+         "defaultValue": 3
+     },
+     "VMNameOCPMaster": {
+       "type": "string",
+       "metadata": {
+        "Description": "Nom de/des VM Master"
+      },
+      "defaultValue": "VM-OCPMaster-"
+     },
+     "vmSizeOCPMaster": {
+      "type": "string",
+      "metadata": {
+        "Description": "Taille de la VM Master"
+      },
+      "allowedValues": [
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_A1_v2",
+        "Standard_A2_v2",
+        "Standard_F1",
+        "Standard_F2"
+      ],
+      "defaultValue": "Standard_A1_v2"
+     },
+     "adminUsernameOCPMaster": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du compte admin local Master"
+      }      
+     },
+     "adminPasswordOCPMaster": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Mot de passe du compte admin local Master"
+        }
+     }
+   },
+   "variables": {
+       "networkSecurityGroupNameOCPBastion":"NSG-OCPBastion",
+       "networkSecurityGroupNameOCPGluster":"NSG-OCPGluster",
+       "networkSecurityGroupNameOCPAppliNode":"NSG-OCPAppliNode",
+       "networkSecurityGroupNameOCPMaster":"NSG-OCPMaster",
+       "networkSecurityGroupNameOCPInfraNode":"NSG-OCPInfraNode",
+       "BastionSSHNAT": "BastionSSHNAT",
+       "NicBastion" : "NIC0-OCPBastion-0",
+       "nicOCPNGPrefix":"NIC0-OCPGluster-",
+       "nicOCPNIPrefix":"NIC0-OCPInfraNode-",
+       "nicOCPMasterPrefix":"NIC0-OCPMaster-",
+       "publicIPAddressIDInfraNode": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddressNameInfraNode'))]",
+       "lbIDInfraNode": "[resourceId('Microsoft.Network/loadBalancers',parameters('LbInfraNodeName'))]",
+       "frontEndIPConfigIDInfraNode": "[concat(variables('lbIDInfraNode'),'/frontendIPConfigurations/InfraNodeLBFE')]",
+       "lbPoolIDInfraNode": "[concat(variables('lbIDInfraNode'),'/backendAddressPools/InfraNodeLBBE')]",
+       "lbProbeIDInfraNode": "[concat(variables('lbIDInfraNode'),'/probes/tcpProbe')]",
+       "publicIPAddressIDMaster": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddressNameMaster'))]",
+       "lbIDMaster": "[resourceId('Microsoft.Network/loadBalancers',parameters('LbMasterName'))]",
+       "frontEndIPConfigIDMaster": "[concat(variables('lbIDMaster'),'/frontendIPConfigurations/MasterLBFE')]",
+       "lbPoolIDMaster": "[concat(variables('lbIDMaster'),'/backendAddressPools/MasterLBBE')]",
+       "lbProbeIDMaster": "[concat(variables('lbIDMaster'),'/probes/tcpProbe')]"     
+      
+   },
+   "resources": [
+       { 
+          "comments": "NSG-OCPBastion",
+          "type": "Microsoft.Network/networkSecurityGroups",
+          "name": "[variables('networkSecurityGroupNameOCPBastion')]",
+          "apiVersion": "2016-03-30",
+          "location": "[resourceGroup().location]",
+          "properties": {
+          "securityRules": [
+              {
+                 "name": "OK-SSH-entrant",
+                 "properties": {
+                 "description": "SSH",
+                 "protocol": "Tcp",
+                 "sourcePortRange": "*",
+                 "destinationPortRange": "22",
+                 "sourceAddressPrefix": "*",
+                 "destinationAddressPrefix": "*",
+                 "access": "Allow",
+                 "priority": 100,
+                 "direction": "Inbound"
+                    }
+               }
+              ]
+            }
+       },
+       { 
+          "comments": "NSG-OCPGluster",
+          "type": "Microsoft.Network/networkSecurityGroups",
+          "name": "[variables('networkSecurityGroupNameOCPGluster')]",
+          "apiVersion": "2016-03-30",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "securityRules": [
+              {
+                 "name": "OK-SSH-entrant",
+                 "properties": {
+                 "description": "SSH",
+                 "protocol": "Tcp",
+                 "sourcePortRange": "*",
+                 "destinationPortRange": "22",
+                 "sourceAddressPrefix": "*",
+                 "destinationAddressPrefix": "*",
+                 "access": "Allow",
+                 "priority": 100,
+                 "direction": "Inbound"
+                    }
+               }
+              ]
+            }
+       },
+       { 
+          "comments": "NSG-OCPAppliNode",
+          "type": "Microsoft.Network/networkSecurityGroups",
+          "name": "[variables('networkSecurityGroupNameOCPAppliNode')]",
+          "apiVersion": "2016-03-30",
+          "location": "[resourceGroup().location]",
+          "properties": {
+          "securityRules": [
+              {
+                 "name": "OK-SSH-entrant",
+                 "properties": {
+                 "description": "SSH",
+                 "protocol": "Tcp",
+                 "sourcePortRange": "*",
+                 "destinationPortRange": "22",
+                 "sourceAddressPrefix": "*",
+                 "destinationAddressPrefix": "*",
+                 "access": "Allow",
+                 "priority": 100,
+                 "direction": "Inbound"
+                    }
+              }
+             ]
+            }
+       },
+       {
+          "comments": "NSG-OCPInfraNode",  
+          "type": "Microsoft.Network/networkSecurityGroups",
+          "name": "[variables('networkSecurityGroupNameOCPInfraNode')]",
+          "apiVersion": "2016-03-30",
+          "location": "[resourceGroup().location]",
+          "properties": {
+          "securityRules": [
+              {
+                 "name": "OK-SSH-entrant",
+                 "properties": {
+                 "description": "SSH",
+                 "protocol": "Tcp",
+                 "sourcePortRange": "*",
+                 "destinationPortRange": "22",
+                 "sourceAddressPrefix": "*",
+                 "destinationAddressPrefix": "*",
+                 "access": "Allow",
+                 "priority": 100,
+                 "direction": "Inbound"
+                    }
+               },
+               {
+                 "name": "OK-HTTPS-entrant",
+                 "properties": {
+                 "description": "HTTPS",
+                 "protocol": "Tcp",
+                 "sourcePortRange": "*",
+                 "destinationPortRange": "443",
+                 "sourceAddressPrefix": "*",
+                 "destinationAddressPrefix": "*",
+                 "access": "Allow",
+                 "priority": 200,
+                 "direction": "Inbound"
+                    }
+               },
+               {
+                 "name": "OK-HTTP-entrant",
+                 "properties": {
+                 "description": "HTTP",
+                 "protocol": "Tcp",
+                 "sourcePortRange": "*",
+                 "destinationPortRange": "80",
+                 "sourceAddressPrefix": "*",
+                 "destinationAddressPrefix": "*",
+                 "access": "Allow",
+                 "priority": 300,
+                 "direction": "Inbound"
+                    }
+               }
+             ]
+            }
+       },
+       { 
+          "comments": "NSG-OCPMaster",
+          "type": "Microsoft.Network/networkSecurityGroups",
+          "name": "[variables('networkSecurityGroupNameOCPMaster')]",
+          "apiVersion": "2016-03-30",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "securityRules": [
+              {
+                 "name": "OK-SSH-entrant",
+                 "properties": {
+                 "description": "SSH",
+                 "protocol": "Tcp",
+                 "sourcePortRange": "*",
+                 "destinationPortRange": "22",
+                 "sourceAddressPrefix": "*",
+                 "destinationAddressPrefix": "*",
+                 "access": "Allow",
+                 "priority": 100,
+                 "direction": "Inbound"
+                    }
+               },
+               {
+                 "name": "OK-HTTPS-entrant",
+                 "properties": {
+                 "description": "SSH",
+                 "protocol": "Tcp",
+                 "sourcePortRange": "*",
+                 "destinationPortRange": "443",
+                 "sourceAddressPrefix": "*",
+                 "destinationAddressPrefix": "*",
+                 "access": "Allow",
+                 "priority": 200,
+                 "direction": "Inbound"
+                    }
+               }
+              ]
+            }
+       },       
+       {
+        "comments": "Vnet",
+        "type": "Microsoft.Network/virtualNetworks",
+        "name": "[parameters('virtualNetworkName')]",
+        "apiVersion": "2016-03-30",
+        "location":"[resourceGroup().location]",
+        "dependsOn": [
+            "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPBastion'))]",
+            "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPGluster'))]",
+            "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPAppliNode'))]",
+            "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPMaster'))]",
+            "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPInfraNode'))]"
+        ],
+        "properties": {
+            "addressSpace":{
+                "addressPrefixes": [
+                    "[parameters('virtualNetworkAddressRange')]"
+                ]                
+            },
+            "subnets":[
+                {
+                    "name": "[parameters('subnetName1')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet1AddressRange')]",
+                        "networkSecurityGroup": {
+                            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPBastion'))]"
+                        }
+                    }
+                },
+                {
+                    "name": "[parameters('subnetName2')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet2AddressRange')]",
+                        "networkSecurityGroup": {
+                            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPGluster'))]"
+                        }
+                    }
+                },
+                {
+                    "name": "[parameters('subnetName3')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet3AddressRange')]",
+                        "networkSecurityGroup": {
+                             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPAppliNode'))]"
+                        }
+                    }
+                },
+                {
+                    "name": "[parameters('subnetName4')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet4AddressRange')]",
+                        "networkSecurityGroup": {
+                            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPMaster'))]"
+                        }
+                    }
+                },
+                {
+                    "name": "[parameters('subnetName5')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet5AddressRange')]",
+                        "networkSecurityGroup": {
+                            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupNameOCPInfraNode'))]"
+                        }
+                    }
+                }
+            ]
+        }
+       },
+       {
+        "comments": "Groupe de disponibilté bastion",
+        "type": "Microsoft.Compute/availabilitySets",
+        "name": "[parameters('AvailabilitySetNameBastion')]",
+        "apiVersion": "2016-04-30-preview",
+        "location":"[resourceGroup().location]",
+        "properties": {
+            "platformFaultDomainCount":3,
+            "platformUpdateDomainCount":5,
+            "managed":true
+            }
+       },
+       {
+        "comments": "Ip Publique VM Bastion",   
+        "type": "Microsoft.Network/publicIPAddresses",
+        "name": "[parameters('publicIPAddressNameBastion')]",
+        "apiVersion": "2016-03-30",
+        "location":"[resourceGroup().location]",
+        "properties": {
+            "dnsSettings":{
+                "domainNameLabel": "[parameters('dnsPrefixBastion')]"
+            },
+            "publicIPAllocationMethod":"Static"
+          }
+       },
+       {
+        "comments": "Load Balancer Bastion",
+        "type": "Microsoft.Network/loadBalancers",
+        "name": "[parameters('LbBastionName')]",
+        "apiVersion": "2016-03-30",
+        "location":"[resourceGroup().location]",
+        "dependsOn": [
+            "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressNameBastion'))]"
+        ],
+        "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "BastionLBFE",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressNameBastion'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "BastionLBBE"
+          }
+        ],
+        "inboundNatRules": [
+          {
+            "name": "[variables('BastionSSHNAT')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('LbBastionName'), 'BastionLBFE')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 22001,
+              "backendPort": 22,
+              "enableFloatingIP": false
+            }
+          }
+         ]
+        }
+       },
+       {
+        "comments": "Nic de la VM Bastion",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[variables('NicBastion')]",
+        "apiVersion": "2016-03-30",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+          "[resourceId('Microsoft.Network/loadBalancers', parameters('LbBastionName'))]"        
+         ],
+        "properties": {
+          "ipConfigurations": [
+           {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('NicBastionIPAddress')]",
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName1'))]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('LbBastionName'), 'BastionLBBE')]"
+                }
+              ],
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', parameters('LbBastionName'), variables('BastionSSHNAT'))]"
+                }
+              ]
+            }
+          }
+         ]
+
+        }
+       },
+       {
+        "comments":"VM Bastion",
+        "type": "Microsoft.Compute/virtualMachines",
+        "name": "[parameters('VMNameBastion')]",
+        "apiVersion": "2016-04-30-preview",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+            "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetNameBastion'))]",
+            "[resourceId('Microsoft.Network/networkInterfaces',variables('NicBastion'))]"
+        ],
+        "properties":{
+            "availabilitySet":{
+                "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetNameBastion'))]"
+            },
+            "hardwareProfile":{
+                "vmSize":"[parameters('vmSizeBastion')]"
+            },
+            "osProfile":{
+                "computerName": "[parameters('VMNameBastion')]",
+                "adminUsername": "[parameters('adminUsernameBastion')]",
+                "adminPassword": "[parameters('adminPasswordBastion')]"
+            },
+            "storageProfile":{
+                "imageReference":{
+                   "id": "/subscriptions/45d70f51-2e63-4daa-8870-27e468ba9baa/resourceGroups/RG-Repository-OS/providers/Microsoft.Compute/images/VM-Master-0-image"
+                },
+                "osDisk": {
+                    "name": "[concat('OsDisk-',parameters('VMNamebastion'))]",
+                    "createOption": "fromImage"
+                 }
+
+            },
+            "networkProfile":{
+                "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('NicBastion'))]"
+            }
+          ]
+         }  
+        }
+       },
+       {
+        "comments": "Groupe de disponibilté Gluster",   
+        "type": "Microsoft.Compute/availabilitySets",
+        "name": "[parameters('AvailabilitySetNameGluster')]",
+        "apiVersion": "2016-04-30-preview",
+        "location":"[resourceGroup().location]",
+        "properties": {
+            "platformFaultDomainCount":3,
+            "platformUpdateDomainCount":5,
+            "managed":true
+            }
+       },
+       {
+        "comments": "Nic des VM VM-OCPNG",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('nicOCPNGPrefix'), copyindex())]",
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "copy": {
+            "name": "nicLoop",
+            "count": "[parameters('OCPNGnumberOfInstances')]"
+         },
+        "dependsOn": [
+          "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"          
+          ],
+        "properties": {
+            "ipConfigurations":[
+                {
+                    "name": "ipconfig1",
+                    "properties": {
+                        "privateIPAllocationMethod":"Dynamic",
+                        "subnet": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName2'))]"
+                        }
+                    }
+                }
+            ]
+
+        }
+       },
+       {
+        "comments": "VM-OCPNG de 0 à 2",
+        "type": "Microsoft.Compute/virtualMachines",
+        "name": "[concat(parameters('VMNameOCPNG'), copyindex())]",
+        "apiVersion": "2016-04-30-preview",
+        "location": "[resourceGroup().location]",
+        "copy": {
+            "name": "virtualMachineLoop",
+            "count": "[parameters('OCPNGnumberOfInstances')]"
+         },
+        "dependsOn": [
+            "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetNameGluster'))]",
+            "[concat('Microsoft.Network/networkInterfaces/',variables('nicOCPNGPrefix'),copyindex())]"
+          ],
+        "properties":{
+            "availabilitySet":{
+                "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetNameGluster'))]"
+            },
+            "hardwareProfile":{
+                "vmSize":"[parameters('vmSizeOCPNG')]"
+            },
+            "osProfile":{
+                "computerName": "[concat(parameters('VMNameOCPNG'), copyIndex())]",
+                "adminUsername": "[parameters('adminUsernameOCPNG')]",
+                "adminPassword": "[parameters('adminPasswordOCPNG')]"
+            },
+            "storageProfile":{
+                "imageReference":{
+                   "id": "/subscriptions/45d70f51-2e63-4daa-8870-27e468ba9baa/resourceGroups/RG-Repository-OS/providers/Microsoft.Compute/images/VM-Master-0-image"
+                },
+                "osDisk": {
+                    "name": "[concat('OsDisk-',parameters('VMNameOCPNG'),copyindex())]",
+                    "createOption": "fromImage"
+                 }
+            },
+            "networkProfile":{
+                "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicOCPNGPrefix'),copyindex()))]"
+           
+            }
+          ]
+         }  
+        }
+       },
+       {
+        "comments": "Groupe de disponibilité InfraNode",
+        "type": "Microsoft.Compute/availabilitySets",
+        "name": "[parameters('AvailabilitySetNameInfraNode')]",
+        "apiVersion": "2016-04-30-preview",
+        "location":"[resourceGroup().location]",
+        "properties": {
+            "platformFaultDomainCount":3,
+            "platformUpdateDomainCount":5,
+            "managed":true
+            }
+        },
+       {
+        "comments": "Ip Publique VM InfraNode",
+        "type": "Microsoft.Network/publicIPAddresses",
+        "name": "[parameters('publicIPAddressNameInfraNode')]",
+        "apiVersion": "2016-03-30",
+        "location":"[resourceGroup().location]",
+        "properties": {
+            "dnsSettings":{
+                "domainNameLabel": "[parameters('dnsPrefixInfraNode')]"
+            },
+            "publicIPAllocationMethod":"Static"
+          }
+       },
+       {
+        "comments": "Load Balancer InfraNode",
+        "type": "Microsoft.Network/loadBalancers",
+        "name": "[parameters('LbInfraNodeName')]",
+        "apiVersion": "2016-03-30",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+           "[concat('Microsoft.Network/publicIPAddresses/', parameters('publicIPAddressNameInfraNode'))]"
+          ],
+         "properties": {
+           "frontendIPConfigurations": [
+            {
+            "name": "InfraNodeLBFE",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('publicIPAddressIDInfraNode')]"
+                }
+               }
+              }
+             ],
+            "backendAddressPools": [
+                 {
+                  "name": "InfraNodeLBBE"
+                 }
+                ],
+            "inboundNatRules": [],
+            "loadBalancingRules": [
+                {
+                     "name": "LBRuleTCP80",
+                     "properties": {
+                        "frontendIPConfiguration": {
+                           "id": "[variables('frontEndIPConfigIDInfraNode')]"
+                           },
+                     "backendAddressPool": {
+                        "id": "[variables('lbPoolIDInfraNode')]"
+                      },
+                    "protocol": "Tcp",
+                    "frontendPort": 80,
+                    "backendPort": 80,
+                    "enableFloatingIP": false,
+                    "idleTimeoutInMinutes": 5,
+                    "probe": {
+                        "id": "[variables('lbProbeIDInfraNode')]"
+                       }
+                      }
+                   },
+                   {
+                     "name": "LBRuleTCP443",
+                     "properties": {
+                        "frontendIPConfiguration": {
+                           "id": "[variables('frontEndIPConfigIDInfraNode')]"
+                           },
+                     "backendAddressPool": {
+                        "id": "[variables('lbPoolIDInfraNode')]"
+                      },
+                    "protocol": "Tcp",
+                    "frontendPort": 443,
+                    "backendPort": 443,
+                    "enableFloatingIP": false,
+                    "idleTimeoutInMinutes": 5,
+                    "probe": {
+                        "id": "[variables('lbProbeIDInfraNode')]"
+                       }
+                      }
+                   }
+               ],
+            "probes": [
+                   {
+                "name": "tcpProbe",
+                "properties": {
+                "protocol": "Tcp",
+                "port": 80,
+                "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+        }
+       },
+       {
+        "comments": "Nic des VM-OCPNI",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('nicOCPNIPrefix'), copyindex())]",
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "copy": {
+            "name": "nicLoop",
+            "count": "[parameters('OCPNInumberOfInstances')]"
+         },
+        "dependsOn": [
+          "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+          "[resourceId('Microsoft.Network/loadBalancers', parameters('LbInfraNodeName'))]"
+          ],
+        "properties": {
+            "ipConfigurations":[
+                {
+                    "name": "ipconfig1",
+                    "properties": {
+                        "privateIPAllocationMethod":"Dynamic",
+                        "subnet": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName5'))]"
+                        },
+                        "loadBalancerBackendAddressPools": [
+                           {
+                           "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('LbInfraNodeName'), 'InfraNodeLBBE')]"
+                           }                           
+                        ]
+                    }
+                }
+            ]
+
+        }
+       },
+       {
+        "comments": "VM-OCPNI de 0 à 2",
+        "type": "Microsoft.Compute/virtualMachines",
+        "name": "[concat(parameters('VMNameOCPNI'), copyindex())]",
+        "apiVersion": "2016-04-30-preview",
+        "location": "[resourceGroup().location]",
+        "copy": {
+            "name": "virtualMachineLoop",
+            "count": "[parameters('OCPNInumberOfInstances')]"
+         },
+        "dependsOn": [
+            "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetNameInfraNode'))]",
+            "[concat('Microsoft.Network/networkInterfaces/',variables('nicOCPNIPrefix'),copyindex())]"
+          ],
+        "properties":{
+            "availabilitySet":{
+                "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetNameInfraNode'))]"
+            },
+            "hardwareProfile":{
+                "vmSize":"[parameters('vmSizeOCPNI')]"
+            },
+            "osProfile":{
+                "computerName": "[concat(parameters('VMNameOCPNI'), copyIndex())]",
+                "adminUsername": "[parameters('adminUsernameOCPNI')]",
+                "adminPassword": "[parameters('adminPasswordOCPNI')]"
+            },
+            "storageProfile":{
+                "imageReference":{
+                   "id": "/subscriptions/45d70f51-2e63-4daa-8870-27e468ba9baa/resourceGroups/RG-Repository-OS/providers/Microsoft.Compute/images/VM-Master-0-image"
+                },
+                "osDisk": {
+                    "name": "[concat('OsDisk-',parameters('VMNameOCPNI'),copyindex())]",
+                    "createOption": "fromImage"
+                 }
+            },
+            "networkProfile":{
+                "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicOCPNIPrefix'),copyindex()))]"
+           
+            }
+          ]
+         }  
+        }
+       },
+       {
+        "comments": "Groupe de disponibilté Master",
+        "type": "Microsoft.Compute/availabilitySets",
+        "name": "[parameters('AvailabilitySetNameMaster')]",
+        "apiVersion": "2016-04-30-preview",
+        "location":"[resourceGroup().location]",
+        "properties": {
+            "platformFaultDomainCount":3,
+            "platformUpdateDomainCount":5,
+            "managed":true
+            }
+       },
+       {
+        "comments": "Ip Publique VM Master",
+        "type": "Microsoft.Network/publicIPAddresses",
+        "name": "[parameters('publicIPAddressNameMaster')]",
+        "apiVersion": "2016-03-30",
+        "location":"[resourceGroup().location]",
+        "properties": {
+            "dnsSettings":{
+                "domainNameLabel": "[parameters('dnsPrefixMaster')]"
+            },
+            "publicIPAllocationMethod":"Static"
+          }
+       },
+       {
+        "comments": "Load Balancer Master",
+        "type": "Microsoft.Network/loadBalancers",
+        "name": "[parameters('LbMasterName')]",
+        "apiVersion": "2016-03-30",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+           "[concat('Microsoft.Network/publicIPAddresses/', parameters('publicIPAddressNameMaster'))]"
+          ],
+         "properties": {
+           "frontendIPConfigurations": [
+            {
+            "name": "MasterLBFE",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('publicIPAddressIDMaster')]"
+                }
+               }
+              }
+             ],
+            "backendAddressPools": [
+                 {
+                  "name": "MasterLBBE"
+                 }
+                ],
+            "inboundNatRules": [],
+            "loadBalancingRules": [
+                   {
+                     "name": "LBRuleTCP443",
+                     "properties": {
+                        "frontendIPConfiguration": {
+                           "id": "[variables('frontEndIPConfigIDMaster')]"
+                           },
+                     "backendAddressPool": {
+                        "id": "[variables('lbPoolIDMaster')]"
+                      },
+                    "protocol": "Tcp",
+                    "frontendPort": 443,
+                    "backendPort": 443,
+                    "enableFloatingIP": false,
+                    "idleTimeoutInMinutes": 5,
+                    "probe": {
+                        "id": "[variables('lbProbeIDMaster')]"
+                       }
+                      }
+                   }
+               ],
+            "probes": [
+                   {
+                "name": "tcpProbe",
+                "properties": {
+                "protocol": "Tcp",
+                "port": 80,
+                "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+        }
+       },
+       {
+        "comments": "Nic des VM-OCPNI",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('nicOCPMasterPrefix'), copyindex())]",
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "copy": {
+            "name": "nicLoop",
+            "count": "[parameters('OCPMasternumberOfInstances')]"
+         },
+        "dependsOn": [
+          "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+          "[resourceId('Microsoft.Network/loadBalancers', parameters('LbMasterName'))]"
+          ],
+        "properties": {
+            "ipConfigurations":[
+                {
+                    "name": "ipconfig1",
+                    "properties": {
+                        "privateIPAllocationMethod":"Dynamic",
+                        "subnet": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName4'))]"
+                        },
+                        "loadBalancerBackendAddressPools": [
+                           {
+                           "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('LbMasterName'), 'MasterLBBE')]"
+                           }                           
+                        ]
+                    }
+                }
+            ]
+
+        }
+       },
+       {
+        "comments": "VM-OCPMaster de 0 à 2",
+        "type": "Microsoft.Compute/virtualMachines",
+        "name": "[concat(parameters('VMNameOCPMaster'), copyindex())]",
+        "apiVersion": "2016-04-30-preview",
+        "location": "[resourceGroup().location]",
+        "copy": {
+            "name": "virtualMachineLoop",
+            "count": "[parameters('OCPMasternumberOfInstances')]"
+         },
+        "dependsOn": [
+            "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetNameMaster'))]",
+            "[concat('Microsoft.Network/networkInterfaces/',variables('nicOCPMasterPrefix'),copyindex())]"
+          ],
+        "properties":{
+            "availabilitySet":{
+                "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailabilitySetNameMaster'))]"
+            },
+            "hardwareProfile":{
+                "vmSize":"[parameters('vmSizeOCPMaster')]"
+            },
+            "osProfile":{
+                "computerName": "[concat(parameters('VMNameOCPMaster'), copyIndex())]",
+                "adminUsername": "[parameters('adminUsernameOCPMaster')]",
+                "adminPassword": "[parameters('adminPasswordOCPMaster')]"
+            },
+            "storageProfile":{
+                "imageReference":{
+                   "id": "/subscriptions/45d70f51-2e63-4daa-8870-27e468ba9baa/resourceGroups/RG-Repository-OS/providers/Microsoft.Compute/images/VM-Master-0-image"
+                },
+                "osDisk": {
+                    "name": "[concat('OsDisk-',parameters('VMNameOCPMaster'),copyindex())]",
+                    "createOption": "fromImage"
+                 }
+            },
+            "networkProfile":{
+                "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicOCPMasterPrefix'),copyindex()))]"
+           
+            }
+          ]
+         }  
+        }
+       }
+    ]
+}
+
+
+
+
