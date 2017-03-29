@@ -377,7 +377,11 @@
        "lbIDMaster": "[resourceId('Microsoft.Network/loadBalancers',parameters('LbMasterName'))]",
        "frontEndIPConfigIDMaster": "[concat(variables('lbIDMaster'),'/frontendIPConfigurations/MasterLBFE')]",
        "lbPoolIDMaster": "[concat(variables('lbIDMaster'),'/backendAddressPools/MasterLBBE')]",
-       "lbProbeIDMaster": "[concat(variables('lbIDMaster'),'/probes/tcpProbe')]"     
+       "lbProbeIDMaster": "[concat(variables('lbIDMaster'),'/probes/tcpProbe')]",
+       "imagePublisher":"OpenLogic",
+       "imageOffer":"CentOS",
+       "CentOSVersion":"7.3" 
+
       
    },
    "resources": [
@@ -742,7 +746,10 @@
             },
             "storageProfile":{
                 "imageReference":{
-                   "id": "/subscriptions/45d70f51-2e63-4daa-8870-27e468ba9baa/resourceGroups/RG-Repository-OS/providers/Microsoft.Compute/images/VM-Master-0-image"
+                  "publisher": "[variables('imagePublisher')]",
+                   "offer": "[variables('imageOffer')]",
+                   "sku": "[variables('CentOSVersion')]",
+                   "version": "latest"
                 },
                 "osDisk": {
                     "name": "[concat('OsDisk-',parameters('VMNamebastion'))]",
@@ -827,7 +834,10 @@
             },
             "storageProfile":{
                 "imageReference":{
-                   "id": "/subscriptions/45d70f51-2e63-4daa-8870-27e468ba9baa/resourceGroups/RG-Repository-OS/providers/Microsoft.Compute/images/VM-Master-0-image"
+                  "publisher": "[variables('imagePublisher')]",
+                   "offer": "[variables('imageOffer')]",
+                   "sku": "[variables('CentOSVersion')]",
+                   "version": "latest"
                 },
                 "osDisk": {
                     "name": "[concat('OsDisk-',parameters('VMNameOCPNG'),copyindex())]",
@@ -1010,7 +1020,10 @@
             },
             "storageProfile":{
                 "imageReference":{
-                   "id": "/subscriptions/45d70f51-2e63-4daa-8870-27e468ba9baa/resourceGroups/RG-Repository-OS/providers/Microsoft.Compute/images/VM-Master-0-image"
+                  "publisher": "[variables('imagePublisher')]",
+                   "offer": "[variables('imageOffer')]",
+                   "sku": "[variables('CentOSVersion')]",
+                   "version": "latest"
                 },
                 "osDisk": {
                     "name": "[concat('OsDisk-',parameters('VMNameOCPNI'),copyindex())]",
@@ -1174,7 +1187,10 @@
             },
             "storageProfile":{
                 "imageReference":{
-                   "id": "/subscriptions/45d70f51-2e63-4daa-8870-27e468ba9baa/resourceGroups/RG-Repository-OS/providers/Microsoft.Compute/images/VM-Master-0-image"
+                  "publisher": "[variables('imagePublisher')]",
+                   "offer": "[variables('imageOffer')]",
+                   "sku": "[variables('CentOSVersion')]",
+                   "version": "latest"
                 },
                 "osDisk": {
                     "name": "[concat('OsDisk-',parameters('VMNameOCPMaster'),copyindex())]",
