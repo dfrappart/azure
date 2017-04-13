@@ -139,12 +139,11 @@
       "type": "string",
       "metadata": {
         "description": "Version de l'édition de Windows Server"
-     },
-      "defaultValue": "2012-R2-Datacenter",
+     },      
       "allowedValues": [
-        "2012-R2-Datacenter",
-        "2016-Datacenter"
-      ]
+        "2012-R2-Datacenter"        
+      ],
+      "defaultValue": "2012-R2-Datacenter"
     },
     "DomainName": {
        "type": "string",
