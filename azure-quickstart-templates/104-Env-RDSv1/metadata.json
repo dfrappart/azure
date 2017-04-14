@@ -1,0 +1,7 @@
+{
+  "itemDisplayName": "Déploiement d'une plateforme RDS (Poc)",
+  "description": "Exemple de déploiement d'une plateforme RDS (AD+CB+RDSH0+Gateway&Web)",
+  "summary": "Ce template prends 60 minutes pour un AD plus 3 serveurs membres plus les rôles RDS",
+  "githubUsername": "Pierre-Chesne",
+  "dateUpdated": "2017-04-14"
+}
