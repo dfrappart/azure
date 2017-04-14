@@ -68,7 +68,7 @@
     "adNicIPAddress": {
       "type": "string",
       "metadata": {
-        "Description": "Adresse IP de la carte du DC (x.x.x.4 dans le subnet)"
+        "Description": "Adresse IP de la carte du DC ( ex:x.x.x.4 dans le subnet)"
       },
       "defaultValue": "10.0.0.4"
     },
@@ -143,7 +143,7 @@
     "cbNicIPAddress": {
       "type": "string",
       "metadata": {
-        "Description": "Adresse IP de la carte du Connexion Brocker (x.x.x.4 dans le subnet)"
+        "Description": "Adresse IP de la carte du Connexion Brocker (ex: x.x.1.4 dans le subnet)"
       },
       "defaultValue": "10.0.1.4"
     },
@@ -189,7 +189,7 @@
     "gwNicIPAddress": {
       "type": "string",
       "metadata": {
-        "Description": "Adresse IP de la carte de la Gateweb & Web (x.x.x.4 dans le subnet)"
+        "Description": "Adresse IP de la carte de la Gateweb & Web (ex: x.x.1.5 dans le subnet)"
       },
       "defaultValue": "10.0.1.5"
     },
@@ -235,7 +235,7 @@
     "rdsh0NicIPAddress": {
       "type": "string",
       "metadata": {
-        "Description": "Adresse IP de la carte de la Gateweb & Web (x.x.x.4 dans le subnet)"
+        "Description": "Adresse IP de la carte de la Gateweb & Web (ex : x.x.1.6 dans le subnet)"
       },
       "defaultValue": "10.0.1.6"
     },
