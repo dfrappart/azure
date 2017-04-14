@@ -10,7 +10,7 @@
 Le template déploie :
 - Vnet
 - 2 subnets (Subnet AD + Subnet RDS)
-- Load balancer (LB-AD prise de main AD tcp 5001) + IP Publique
+- Load balancer (LB-AD prise de main "Inbound Nat rule" VM AD tcp 5001) + IP Publique
 - Load balancer (LB-CB prise de main "Inbound Nat rule" VM Connexion Brocker tcp 5001) + IP Publique
 - Load balancer (LB-RDS prise de main "Inbound Nat rule" VM RDSH0 tcp 5001) + IP Publique
 - Load balancer (LB-GW prise de main "Inbound Nat rule" VM GW tcp 5001 + "Load balancing rules" TCP 443 + UDP 3391 sur la VM Gateway+Web) + IP Publique
@@ -19,7 +19,7 @@ Le template déploie :
 - Une VM Gateway+Web membre de l'Ad (managed disk)
 - Une VM RDSH0 membre de l'AD (managed disk)
 
-L'acces de la plateforme ce fait par l'IP Publique du "Load Balancer LB-GW"
+Les services RDS sont exposés par l'IP Publique du "Load Balancer LB-GW"   (ex:fqdnippubgw.westeurope.cloudapp.azure.com)
 
 Pour finir la configuration lancer le script "rds.ps1" sur le controleur de domaine pour déployer tous les rôles "RDS" (Connexion Broker,Remote Desktop Host, WEB).
 Ex:
