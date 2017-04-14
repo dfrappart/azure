@@ -21,13 +21,22 @@ Le template déploie :
 
 Les services RDS sont exposés par l'IP Publique du "Load Balancer LB-GW"   (ex:fqdnippubgw.westeurope.cloudapp.azure.com)
 
-Pour finir la configuration lancer le script "rds.ps1" sur le controleur de domaine pour déployer tous les rôles "RDS" (Connexion Broker,Remote Desktop Host, WEB).
+Pour finir la configuration lancer le script "rds.ps1" sur le controleur de domaine pour déployer tous les rôles "RDS" (Connexion Broker,Remote Desktop Host, WEB). (20 minutes)
 Ex:
 Import-Module RemoteDesktop
 New-RDSessionDeployment `
  -ConnectionBroker vm-cb.ma-pme.local `
  -SessionHost vm-rdsh0.ma-pme.local `
  -WebAccessServer vm-gw.ma-pme.local
+
+A la fin du script, ajoutez les serveurs "vm-cb.ma-pme.local", "vm-rdsh0.ma-pme.local", "vm-gw.ma-pme.local" dans le "Server Manager" de l'AD pour lancer votre configuration :
+- Gateway "fqdnippubgw.westeurope.cloudapp.azure.com"
+- Assistant RemoteApp/Bureau (collections ...)
+- etc
+
+Pour des tests, récuperer le certificat auto-signé "fqdnippubgw.westeurope.cloudapp.azure.com" sur le serveur "vm-gw.ma-pme.local" (export) , il sera à installer sur les postes ...
+
+Bon test !!!
 
 ##Création d'un "Resource Group":
 New-AzureRmResourceGroup -Name $rgName -Location $location
