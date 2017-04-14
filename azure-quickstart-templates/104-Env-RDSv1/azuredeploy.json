@@ -56,7 +56,7 @@
       "metadata": {
         "description": "prefix DNS de l'IP publique utilisée par le Load Balancer (AD)"
       },
-      "defaultValue": "fqdnippubrds"
+      "defaultValue": "fqdnippubad"
     },
     "adLbName":{
         "type": "string",
