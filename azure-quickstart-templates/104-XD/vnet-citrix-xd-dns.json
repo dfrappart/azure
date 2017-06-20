@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du Virtual Network"
+      }
+    },
+    "virtualNetworkAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "Plan d'adressage du Virtual Network format CIDR"
+      }
+    },
+    "ADsubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du subnet du Subnet"
+      }
+    },
+    "ADSubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Numéro de réseau du subnet"
+      }
+    },
+    "VDIsubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du subnet du Subnet VDI"
+      }
+    },
+    "VDISubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Numéro de réseau du subnet VDI (format CIRD)"
+      }
+    },
+    "DNSServerAddress": {
+      "type": "array",
+      "metadata": {
+        "description": "Adresse du DNS dans le Virtual Network"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('virtualNetworkName')]",
+      "apiVersion": "2017-03-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkAddressRange')]"
+          ]
+        },
+        "dhcpOptions": {
+          "dnsServers": "[parameters('DNSServerAddress')]"
+        },
+        "subnets": [
+          {
+            "name": "[parameters('ADsubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('ADSubnetAddressPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('VDIsubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('VDISubnetAddressPrefix')]"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

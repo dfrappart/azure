@@ -1,0 +1,71 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du Virtual Network"
+      }
+    },
+    "virtualNetworkAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "Plan d'adressage du Virtual Network Citrix (format CIDR) "
+      }
+    },
+    "ADsubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du subnet du Subnet AD"
+      }
+    },
+    "ADSubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Numéro de réseau du subnet AD (format CIRD)"
+      }
+    },
+    "VDIsubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Nom du subnet du Subnet AD"
+      }
+    },
+    "VDISubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Numéro de réseau du subnet AD (format CIRD)"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('virtualNetworkName')]",
+      "apiVersion": "2017-03-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkAddressRange')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('ADsubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('ADSubnetAddressPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('VDIsubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('VDISubnetAddressPrefix')]"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

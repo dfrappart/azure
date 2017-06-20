@@ -1,0 +1,7 @@
+{
+  "itemDisplayName": "Déploiement d'un contrôleur de domaine avec deux serveurs membres",
+  "description": "Exemple de déploiement d'un contrôleur de domaine avec  deux serveurs membres",
+  "summary": "Ce template prends 50 minutes pour un AD plus trois serveurs membres et un poste Windows 10",
+  "githubUsername": "Pierre-Chesne",
+  "dateUpdated": "2016-06-20"
+}
