@@ -1,0 +1,7 @@
+{
+  "itemDisplayName": "Déploiement d'une Virtual Appliance Fortinet",
+  "description": "Déploiement d'une Virtual Appliance Fortinet NGFW Single VM Template avec trois NICs",
+  "summary": "Ce template prends 10 minutes à déployer en environnement sécurisé avec une Virtual Appliance Fortinet ",
+  "githubUsername": "Pierre-Chesne",
+  "dateUpdated": "2017-07-05"
+}
