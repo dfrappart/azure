@@ -1,0 +1,551 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "publicIPAddressesName": {
+            "type": "string",
+            "metadata": {
+                "Decription": "Nom de l'Ip Publique"
+            },
+            "defaultValue": "IP_Publique_Forti"
+        },
+        "virtualNetworks_Fortigate_name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du Virtual Network"
+            },
+            "defaultValue": "Vnet-FortiOne"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Plan d'adressage du Virtual Network"
+            },
+            "allowedValues": [
+                "172.16.0.0/16",
+                "192.168.0.0/16",
+                "10.0.0.0/16"
+            ],
+            "defaultValue": "172.16.0.0/16"
+        },
+        "PublicFacingSubnetName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du Subnet Externe"
+            },
+            "defaultValue": "PublicFacingSubnet"
+        },
+        "PublicFacingSubnetAddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Numéro du Subnet Externe"
+            },
+            "allowedValues": [
+                "172.16.0.0/24",
+                "192.168.0.0/24",
+                "10.0.0.0/24"
+            ],
+            "defaultValue": "172.16.0.0/24"
+        },
+        "InternalSubnet1Name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du Subnet Interne 1"
+            },
+            "defaultValue": "InternalSubnet1"
+        },
+        "InternalSubnet1AddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Numéro du Subnet Interne 1"
+            },
+            "allowedValues": [
+                "172.16.1.0/24",
+                "192.168.1.0/24",
+                "10.0.1.0/24"
+            ],
+            "defaultValue": "172.16.1.0/24"
+        },
+        "InternalSubnet2Name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du subnet Interne 2"
+            },
+            "defaultValue": "InternalSubnet2"
+        },
+        "InternalSubnet2AddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Numéro du Subnet Interne 2"
+            },
+            "allowedValues": [
+                "172.16.2.0/24",
+                "192.168.2.0/24",
+                "10.0.2.0/24"
+            ],
+            "defaultValue": "172.16.2.0/24"
+        },
+        "Nic0_External_name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la NIC externe"
+            },
+            "defaultValue": "Nic0_External"
+        },
+        "Nic0_External_nameAddress": {
+            "type": "string",
+            "metadata": {
+                "Description": "Adrresse de la nic Externe *.*.*.4 (ex: 172.16.0.4 ; 192.168.0.4 ; 10.0.0.4)"
+            },
+            "defaultValue": "172.16.0.4"
+        },
+        "Nic0_Internal1_name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la NIC Interne 1"
+            },
+            "defaultValue": "Nic0_Internal_1"
+        },
+        "Nic0_Internal1_nameAddress": {
+            "type": "string",
+            "metadata": {
+                "Description": "Adrresse de la nic Subnet Interne 1 *.*.*.4(ex: 172.16.1.4 ; 192.168.1.4 ; 10.0.1.4)"
+            },
+            "defaultValue": "172.16.1.4"
+        },
+        "Nic0_Internal2_name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la NIC Interne 2 "
+            },
+            "defaultValue": "Nic0_Internal_2"
+        },
+        "Nic0_Internal2_nameAddress": {
+            "type": "string",
+            "metadata": {
+                "Description": "Adrresse de la nic Subnet Interne 1 *.*.*.4(ex: 172.16.2.4 ; 192.168.2.4 ; 10.0.2.4)"
+            },
+            "defaultValue": "172.16.2.4"
+        },
+        "UDR_InternalSubnet1_name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de l'UDR pour le Subnet Interne"
+            },
+            "defaultValue": "UDR_Internal1"
+        },
+        "UDR_InternalSubnet2_name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de l'UDR pour le Subnet Interne"
+            },
+            "defaultValue": "UDR_Internal2"
+        },
+        "UDR_PublicFacingSubnet_name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de l'UDR pour le Subnet Externe"
+            },
+            "defaultValue": "UDR_External"
+        },
+        "VM_Fortinet_Name": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la VM Fortinet"
+            },
+            "defaultValue": "VM-FortiGate"
+        },
+        "FortiGateImageSKU": {
+            "type": "string",
+            "metadata": {
+                "description": "Modéle de licence PAYG ou BYOL"
+            },
+            "allowedValues": [
+                "fortinet_fg-vm",
+                "fortinet_fg-vm_payg"
+            ],
+            "defaultValue": "fortinet_fg-vm"
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "Description": "Taile de la Fortigate"
+            },
+            "defaultValue": "Standard_D3_v2"
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de l'administrateur Fortigate"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "Description": "Mot de passe de l'administrateur Fortigate "
+            }
+        }
+    },
+    "variables": {
+        "availabilitySetsName": "Av_Set_Fortinet"
+    },
+    "resources": [
+        
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('availabilitySetsName')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [],
+            "sku": {
+                "name": "Aligned"
+            },
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "scale": null,
+            "properties": {
+                "platformUpdateDomainCount": 2,
+                "platformFaultDomainCount": 2,
+                "managed": true
+            }
+        },
+        
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddressesName')]",
+            "apiVersion": "2017-03-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "scale": null,
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4
+            }
+        },
+        
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('UDR_InternalSubnet1_name')]",
+            "apiVersion": "2017-03-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "scale": null,
+            "properties": {
+                "routes": [
+                    {
+                        "name": "to-PublicFacingSubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('PublicFacingSubnetAddressRange')]", 
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('Nic0_Internal1_nameAddress')]" 
+                        }
+                    },
+                    {
+                        "name": "to-Internet",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('Nic0_Internal1_nameAddress')]" 
+                        }
+                    }
+                ]
+            }
+        },
+        
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('UDR_InternalSubnet2_name')]",
+            "apiVersion": "2017-03-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "scale": null,
+            "properties": {
+                "routes": [
+                    {
+                        "name": "to-PublicFacingSubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('PublicFacingSubnetAddressRange')]", 
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('Nic0_Internal2_nameAddress')]" 
+                        }
+                    },
+                    {
+                        "name": "to-Internet",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('Nic0_Internal2_nameAddress')]" 
+                        }
+                    }
+                ]
+            }
+        },
+        
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('UDR_PublicFacingSubnet_name')]",
+            "apiVersion": "2017-03-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "scale": null,
+            "properties": {
+                "routes": [
+                    {
+                        "name": "to-InternalSubnet1",
+                        "properties": {
+                            "addressPrefix": "[parameters('InternalSubnet1AddressRange')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('Nic0_External_nameAddress')]"
+                        }
+                    },
+                    {
+                        "name": "to-InternalSubnet2",
+                        "properties": {
+                            "addressPrefix": "[parameters('InternalSubnet2AddressRange')]", 
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('Nic0_External_nameAddress')]" 
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+       
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_Fortigate_name')]",
+            "apiVersion": "2017-03-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('UDR_InternalSubnet1_name'))]",
+                "[resourceId('Microsoft.Network/routeTables', parameters('UDR_InternalSubnet2_name'))]",
+                "[resourceId('Microsoft.Network/routeTables', parameters('UDR_PublicFacingSubnet_name'))]"
+            ],
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "scale": null,
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('PublicFacingSubnetName')]", 
+                        "properties": {
+                            "addressPrefix": "[parameters('PublicFacingSubnetAddressRange')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('UDR_PublicFacingSubnet_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('InternalSubnet1Name')]", 
+                        "properties": {
+                            "addressPrefix": "[parameters('InternalSubnet1AddressRange')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('UDR_InternalSubnet1_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('InternalSubnet2Name')]", 
+                        "properties": {
+                            "addressPrefix": "[parameters('InternalSubnet2AddressRange')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('UDR_InternalSubnet2_name'))]"
+                            }
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": []
+            }
+        },
+        
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('Nic0_External_name')]",
+            "apiVersion": "2017-03-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressesName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Fortigate_name'))]"
+            ],
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "scale": null,
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[parameters('Nic0_External_nameAddress')]",
+                            "privateIPAllocationMethod": "Static",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressesName'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Fortigate_name')), '/subnets/PublicFacingSubnet')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            }
+        },
+        
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('Nic0_Internal1_name')]",
+            "apiVersion": "2017-03-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Fortigate_name'))]"
+            ],
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "scale": null,
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[parameters('Nic0_Internal1_nameAddress')]", 
+                            "privateIPAllocationMethod": "Static",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Fortigate_name')), '/subnets/InternalSubnet1')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            }
+        },
+        
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('Nic0_Internal2_name')]",
+            "apiVersion": "2017-03-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Fortigate_name'))]"
+            ],
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "scale": null,
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[parameters('Nic0_Internal2_nameAddress')]", 
+                            "privateIPAllocationMethod": "Static",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Fortigate_name')), '/subnets/InternalSubnet2')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            }
+        },
+      
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('VM_Fortinet_Name')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+            },
+            "plan": {
+                "name": "[parameters('FortiGateImageSKU')]",
+                "publisher": "fortinet",
+                "product": "fortinet_fortigate-vm_v5"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/',parameters('Nic0_External_name'))]",
+                "[concat('Microsoft.Network/networkInterfaces/',parameters('Nic0_Internal1_name'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetsName'))]"
+            ],
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetsName'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('VM_Fortinet_Name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "fortinet",
+                        "offer": "fortinet_fortigate-vm_v5",
+                        "sku": "[parameters('FortiGateImageSKU')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat('OsDisk_',parameters('VM_Fortinet_Name'))]",
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "diskSizeGB": "30",
+                            "lun": 0,
+                            "name": "[concat('Disk2_',parameters('VM_Fortinet_Name'))]",
+                            "createOption": "Empty"
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "properties": {
+                                "primary": true
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',parameters('Nic0_External_name'))]"
+                        },
+                        {
+                            "properties": {
+                                "primary": false
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',parameters('Nic0_Internal1_name'))]"
+                        },
+                        {
+                            "properties": {
+                                "primary": false
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',parameters('Nic0_Internal2_name'))]"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
