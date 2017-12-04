@@ -125,7 +125,7 @@
         "networkSecurityGroupName": "NSG-Lab",
         "NicName": "Nic-01-VM-Lab",
         "vmExtensionName": "dscExtension",
-        "modulesUrl": "https://repository0.blob.core.windows.net/lab/Disk1.zip",
+        "modulesUrl": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/Workshop-1/Disk1.zip",
         "configurationFunction": "Disk1.ps1\\Disk"
     },
     "resources": [
