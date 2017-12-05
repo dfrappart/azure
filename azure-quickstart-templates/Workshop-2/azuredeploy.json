@@ -44,17 +44,6 @@
             },
             "defaultValue": "10.0.0.0/24"
         },
-        "storageAccountType": {
-            "type": "string",
-            "allowedValues": [
-                "Premium_LRS",
-                "Standard_LRS"
-            ],
-            "defaultValue": "Premium_LRS",
-            "metadata": {
-                "Description": "Type de stockage pour le disque Data"
-            }
-        },
         "ManagedDataDisk1": {
             "type": "string",
             "metadata": {
@@ -217,7 +206,7 @@
                 "diskSizeGB": "[parameters('SizeDataDisk1')]"
             },
             "sku": {
-                "name": "[parameters('storageAccountType')]"
+                "name": "Premium_LRS"
             }
         },
         {
