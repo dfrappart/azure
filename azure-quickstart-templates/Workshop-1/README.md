@@ -16,7 +16,7 @@ Le template déploie pour un LAB :
 - Un virtual network
 - un disque data
 - Une VM Windows Server
-- Inatialisation et formatage du disque avec l'extension PowerShell DSC
+- Initialisation et formatage du disque avec l'extension PowerShell DSC
 
 
 
