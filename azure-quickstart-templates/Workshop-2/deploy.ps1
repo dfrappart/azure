@@ -1,4 +1,4 @@
-﻿$AzureAccount = 'root@admapme.onmicrosoft.com'
+﻿$AzureAccount = 'root@masociete.onmicrosoft.com'
 $PassAzureTenant= 'Password123$'
 
 #Login 'Tenant Azure'
