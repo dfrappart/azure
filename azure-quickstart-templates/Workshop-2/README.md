@@ -1,4 +1,4 @@
-# Exemple de déploiement d'une simple VM Windows Server avec un disque supplémentaire (initialisé et formaté sous Windows)
+# Exemple de déploiement d'une simple VM Windows Server - un disque supplémentaire (initialisé et formaté sous Windows) - un Workspace OMS
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FPierre-Chesne%2Fazure%2Fmaster%2Fazure-quickstart-templates%2FWorkshop-2%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
@@ -16,7 +16,7 @@ Le template déploie pour un LAB :
 - Un virtual network
 - un disque data
 - un worksapce OMS (avec les compteurs de performence Windows - CPU - Mémoire - Disque)
-- Une VM Windows Server
+- Une VM Windows Server rattaché au Workspace OMS
 - Initialisation et formatage du disque avec l'extension PowerShell DSC
 
 
