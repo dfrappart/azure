@@ -1,7 +1,7 @@
 {
-  "itemDisplayName": "Déploiement d'une VM Windows Server 2012r2/2016",
-  "description": "Exemple de déploiement d'une simple VM Windows Server avec un disque supplémentaire (initialisé et formaté sous Windows)",
-  "summary": "Ce template prends quelque minutes pour déployer un Windows Server avec un disque Suppl",
+  "itemDisplayName": "Déploiement de X VM Windows Server 2012r2/2016 - OMS",
+  "description": "Exemple de déploiement de X VM Windows Server ",
+  "summary": "Ce template prends quelque minutes pour déployer X Windows Server dans un WorkSpace OMS",
   "githubUsername": "Pierre-Chesne",
   "dateUpdated": "2017-12-04"
 }
