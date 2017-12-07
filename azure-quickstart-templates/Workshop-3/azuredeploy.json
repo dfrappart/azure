@@ -1,0 +1,523 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "PublicIPAddressName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la Ressource IP Publique"
+            },
+            "defaultValue": "Ip-Publique-VM-Lab"
+        },
+        "FqdnAddressName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom fqdn de l'ip publique"
+            },
+            "defaultValue": "fqdnvmlab"
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du VirtualNetwork"
+            },
+            "defaultValue": "Vnet-Lab"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Plan d'adressage de Vnet"
+            },
+            "defaultValue": "10.0.0.0/16"
+        },
+        "subnetName1": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du premier subnet"
+            },
+            "defaultValue": "Subnet-Lab"
+        },
+        "subnet1AddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Numéro de réseau du premier subnet"
+            },
+            "defaultValue": "10.0.0.0/24"
+        },
+        "storageAccountType": {
+            "type": "string",
+            "allowedValues": [
+                "Premium_LRS",
+                "Standard_LRS"
+            ],
+            "defaultValue": "Premium_LRS",
+            "metadata": {
+                "Description": "Type de stockage pour le disque Data"
+            }
+        },
+        "ManagedDataDisk1": {
+            "type": "string",
+            "metadata": {
+                "description": "Nom du disque Data 1"
+            },
+            "defaultValue": "DataDisk1-VM-1-Lab"
+        },
+        "SizeDataDisk1": {
+            "type": "int",
+            "metadata": {
+                "description": "Taille du disque Data 1 (Gb)"
+            },
+            "allowedValues": [
+                32,
+                64,
+                128,
+                512,
+                1024
+            ],
+            "defaultValue": 64
+        },
+        "VMName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la VM"
+            },
+            "defaultValue": "VM-1-Lab"
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "Description": "Taille de la VM"
+            },
+            "allowedValues": [
+                "Standard_B1s",
+                "Standard_B1ms",
+                "Standard_B2s",
+                "Standard_B2ms"
+            ],
+            "defaultValue": "Standard_B2s"
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Nom du compte admin local"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Mot de passe du compte admin local"
+            }
+        },
+        "windowsserver": {
+            "type": "string",
+            "metadata": {
+                "description": "Version de l'édition de Windows Server"
+            },
+            "defaultValue": "2016-Datacenter",
+            "allowedValues": [
+                "2012-R2-Datacenter",
+                "2016-Datacenter"
+            ]
+        },
+        "vaultName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du Recovery Services vault"
+            },
+            "defaultValue": "Vault-Lab"
+        },
+        "policyName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la police de retention"
+            },
+            "defaultValue": "Policy-Lab"
+        },
+        "scheduleRunTimes": {
+            "type": "array",
+            "metadata": {
+                "Description": "Fréquence de sauvegarde"
+            },
+            "defaultValue": [
+                "2017-01-26T05:30:00Z"
+            ]
+        },
+        "dailyRetentionDurationCount": {
+            "type": "int",
+            "metadata": {
+                "Description": "Retention du point de sauvegarde quotidien"
+            },
+            "defaultValue": "180"
+        },
+        "daysOfTheWeek": {
+            "type": "array",
+            "metadata": {
+                "Description": "Rétention du point de sauvegarde hebdomadaire"
+            },
+            "defaultValue": [
+                "Sunday",
+                "Tuesday",
+                "Thursday"
+            ]
+        },
+        "weeklyRetentionDurationCount": {
+            "type": "int",
+            "metadata": {
+                "Description": "Nombre de sauvegardes hebdomadaires"
+            },
+            "defaultValue": "104"
+        },
+        "monthlyRetentionDurationCount": {
+            "type": "int",
+            "metadata": {
+                "Description": "Nombre de sauvergardes mensuel "
+            },
+            "defaultValue": "60"
+        },
+        "monthsOfYear": {
+            "type": "array",
+            "metadata": {
+                "Description": "Rétention du point de sauvegarde annuel"
+            },
+            "defaultValue": [
+                "January",
+                "March",
+                "August"
+            ]
+        },
+        "yearlyRetentionDurationCount": {
+            "type": "int",
+            "metadata": {
+                "Description": "Nombre d'années de rétention"
+            },
+            "defaultValue": 10
+        },
+        "existingVirtualMachinesResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Ressource groupe des VM à Backuper. "
+            }
+        },
+        "existingVirtualMachines": {
+            "type": "array",
+            "metadata": {
+                "description": "Array de machines à sauvegarder : exemple [\"vm1\",\"vm2\",\"vm3\"]"
+            }
+        }
+    },
+    "variables": {
+        "AvailabilitySetName": "AV-Set-Lab",
+        "networkSecurityGroupName": "NSG-Lab",
+        "NicName": "Nic-01-VM-Lab",
+        "vmExtensionName": "dscExtension",
+        "modulesUrl": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/Workshop-2/Disk1.zip",
+        "configurationFunction": "Disk1.ps1\\Disk",
+        "backupFabric": "Azure",
+        "v2VmType": "Microsoft.Compute/virtualMachines",
+        "v2VmContainer": "iaasvmcontainer;iaasvmcontainerv2;",
+        "v2Vm": "vm;iaasvmcontainerv2;"
+    },
+    "resources": [
+        {
+            "comments": "Ip Publique",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddressName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('fqdnAddressName')]"
+                }
+            }
+        },
+        {
+            "comments": "Groupe de disponibilité",
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('AvailabilitySetName')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformFaultDomainCount": 3,
+                "platformUpdateDomainCount": 5,
+                "managed": true
+            }
+        },
+        {
+            "comments": "Création d'un Virtual Network",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworkName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName1')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1AddressRange')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "Création Network Security Group",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('networkSecurityGroupName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "RDP",
+                        "properties": {
+                            "description": "RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "Création de la carte réseau",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('NicName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups',variables('networkSecurityGroupName'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses',parameters('PublicIPAddressName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "Ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName1'))]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('PublicIPAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('networkSecurityGroupName'))]"
+                }
+            }
+        },
+        {
+            "comments": "Création du disque data",
+            "type": "Microsoft.Compute/disks",
+            "name": "[parameters('ManagedDataDisk1')]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": "[parameters('SizeDataDisk1')]"
+            },
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            }
+        },
+        {
+            "comments": "Créetion de la VM",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('VMName')]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/disks/', parameters('ManagedDataDisk1'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', variables('AvailabilitySetName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('AvailabilitySetName'))]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('VMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[parameters('windowsserver')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat('OsDisk-',parameters('VMName'))]",
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "lun": 2,
+                            "name": "[parameters('ManagedDataDisk1')]",
+                            "createOption": "Attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', parameters('ManagedDataDisk1'))]"
+                            }
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('VMName'),'/', variables('vmExtensionName'))]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('VMName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.19",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "ModulesUrl": "[variables('modulesUrl')]",
+                    "ConfigurationFunction": "[variables('configurationFunction')]",
+                    "Properties": {
+                        "MachineName": "[parameters('VMName')]"
+                    }
+                },
+                "protectedSettings": null
+            }
+        },
+        {
+            "comments": "Déploiement du Recovery Services Vault",
+            "type": "Microsoft.RecoveryServices/vaults",
+            "name": "[parameters('vaultName')]",
+            "apiVersion": "2016-06-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "RS0",
+                "tier": "Standard"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/', parameters('VMName'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "comments": "Deploiement de la strategie de rétention",
+            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+            "name": "[concat(parameters('vaultName'), '/', parameters('policyName'))]",
+            "apiVersion": "2016-12-01",
+            "dependsOn": [
+                "[concat('Microsoft.RecoveryServices/vaults/', parameters('vaultName'))]"
+            ],
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "backupManagementType": "AzureIaasVM",
+                "schedulePolicy": {
+                    "scheduleRunFrequency": "Daily",
+                    "scheduleRunDays": null,
+                    "scheduleRunTimes": "[parameters('scheduleRunTimes')]",
+                    "schedulePolicyType": "SimpleSchedulePolicy"
+                },
+                "retentionPolicy": {
+                    "dailySchedule": {
+                        "retentionTimes": "[parameters('scheduleRunTimes')]",
+                        "retentionDuration": {
+                            "count": "[parameters('dailyRetentionDurationCount')]",
+                            "durationType": "Days"
+                        }
+                    },
+                    "weeklySchedule": {
+                        "daysOfTheWeek": "[parameters('daysOfTheWeek')]",
+                        "retentionTimes": "[parameters('scheduleRunTimes')]",
+                        "retentionDuration": {
+                            "count": "[parameters('weeklyRetentionDurationCount')]",
+                            "durationType": "Weeks"
+                        }
+                    },
+                    "monthlySchedule": {
+                        "retentionScheduleFormatType": "Daily",
+                        "retentionScheduleDaily": {
+                            "daysOfTheMonth": [
+                                {
+                                    "date": 1,
+                                    "isLast": false
+                                }
+                            ]
+                        },
+                        "retentionScheduleWeekly": null,
+                        "retentionTimes": "[parameters('scheduleRunTimes')]",
+                        "retentionDuration": {
+                            "count": "[parameters('monthlyRetentionDurationCount')]",
+                            "durationType": "Months"
+                        }
+                    },
+                    "yearlySchedule": {
+                        "retentionScheduleFormatType": "Daily",
+                        "monthsOfYear": "[parameters('monthsOfYear')]",
+                        "retentionScheduleDaily": {
+                            "daysOfTheMonth": [
+                                {
+                                    "date": 1,
+                                    "isLast": false
+                                }
+                            ]
+                        },
+                        "retentionScheduleWeekly": null,
+                        "retentionTimes": "[parameters('scheduleRunTimes')]",
+                        "retentionDuration": {
+                            "count": "[parameters('yearlyRetentionDurationCount')]",
+                            "durationType": "Years"
+                        }
+                    },
+                    "retentionPolicyType": "LongTermRetentionPolicy"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+            "name": "[concat(parameters('vaultName'), '/', variables('backupFabric'), '/', variables('v2VmContainer'), concat(parameters('existingVirtualMachinesResourceGroup'),';',parameters('existingVirtualMachines')[copyIndex()]), '/', variables('v2Vm'), concat(parameters('existingVirtualMachinesResourceGroup'),';',parameters('existingVirtualMachines')[copyIndex()]))]",
+            "apiVersion": "2016-06-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.RecoveryServices/vaults/', parameters('vaultName'), '/', 'backupPolicies', '/',parameters('policyName') )]"
+            ],
+            "copy": {
+                "name": "v2VmsCopy",
+                "count": "[length(parameters('existingVirtualMachines'))]"
+            },
+            "properties": {
+                "protectedItemType": "[variables('v2VmType')]",
+                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies',parameters('vaultName'),parameters('policyName') )]",
+                "sourceResourceId": "[resourceId(subscription().subscriptionId,parameters('existingVirtualMachinesResourceGroup'),'Microsoft.Compute/virtualMachines',parameters('existingVirtualMachines')[copyIndex()])]"
+            }
+        }
+    ]
+}
