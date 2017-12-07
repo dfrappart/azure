@@ -19,6 +19,7 @@ catch {
 New-AzureRmResourceGroup -Name $rgName -Location $location 
 }
 
+
 New-AzureRmResourceGroupDeployment `
 -Name DeployAppv1 `
 -ResourceGroupName $rgName `

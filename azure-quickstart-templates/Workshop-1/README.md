@@ -20,7 +20,6 @@ Le template déploie pour un LAB :
 
 
 
-
 ##Création d'un "Resource Group":
 New-AzureRmResourceGroup -Name $rgName -Location $location 
 
