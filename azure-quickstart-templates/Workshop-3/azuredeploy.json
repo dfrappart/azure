@@ -210,7 +210,7 @@
         "networkSecurityGroupName": "NSG-Lab",
         "NicName": "Nic-01-VM-Lab",
         "vmExtensionName": "dscExtension",
-        "modulesUrl": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/Workshop-2/Disk1.zip",
+        "modulesUrl": "https://raw.githubusercontent.com/Pierre-Chesne/azure/master/azure-quickstart-templates/Workshop-3/Disk1.zip",
         "configurationFunction": "Disk1.ps1\\Disk",
         "backupFabric": "Azure",
         "v2VmType": "Microsoft.Compute/virtualMachines",
