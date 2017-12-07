@@ -147,7 +147,7 @@
             "metadata": {
                 "Description": "Retention du point de sauvegarde quotidien"
             },
-            "defaultValue": "180"
+            "defaultValue": 180
         },
         "daysOfTheWeek": {
             "type": "array",
@@ -165,14 +165,14 @@
             "metadata": {
                 "Description": "Nombre de sauvegardes hebdomadaires"
             },
-            "defaultValue": "104"
+            "defaultValue": 104
         },
         "monthlyRetentionDurationCount": {
             "type": "int",
             "metadata": {
                 "Description": "Nombre de sauvergardes mensuel "
             },
-            "defaultValue": "60"
+            "defaultValue": 60
         },
         "monthsOfYear": {
             "type": "array",
