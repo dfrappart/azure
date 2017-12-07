@@ -3,5 +3,5 @@
   "description": "Exemple de déploiement d'une simple VM Windows Server avec un disque supplémentaire (initialisé et formaté sous Windows)",
   "summary": "Ce template prends quelque minutes pour déployer un Windows Server avec un disque Suppl",
   "githubUsername": "Pierre-Chesne",
-  "dateUpdated": "2017-12-04"
+  "dateUpdated": "2017-12-04" 
 }
