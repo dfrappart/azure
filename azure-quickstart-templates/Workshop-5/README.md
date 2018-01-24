@@ -13,6 +13,7 @@ Le template déploie pour un LAB :
 - Une IP Publique
 - Un groupe de disponibilité
 - Un virtual network
+- Network Security Group TCP 3389 ou TCP 22 (condition)
 - Une  VM Windows Server ou Linux (condition)
 
 
