@@ -1,0 +1,7 @@
+{
+  "itemDisplayName": "Déploiement d'une VM avec condition",
+  "description": "Exemple de déploiement d'une VM Windows ou Linux ",
+  "summary": "Ce template prends quelque minutes pour déployer une VM Windows ouLinux",
+  "githubUsername": "Pierre-Chesne",
+  "dateUpdated": "2018-01-24"
+}

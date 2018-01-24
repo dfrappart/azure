@@ -1,0 +1,247 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "platform": {
+            "type": "string",
+            "allowedValues": [
+                "WinSrv",
+                "Linux"
+            ],
+            "metadata": {
+                "description": "Selection du systeme d'exploitation"
+            }
+        },
+        "PublicIPAddressName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la Ressource IP Publique"
+            },
+            "defaultValue": "Ip-Publique-VM-Lab"
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du VirtualNetwork"
+            },
+            "defaultValue": "Vnet-Lab"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Plan d'adressage de Vnet"
+            },
+            "defaultValue": "10.0.0.0/16"
+        },
+        "subnetName1": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du premier subnet"
+            },
+            "defaultValue": "Subnet-Lab"
+        },
+        "subnet1AddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Numéro de réseau du premier subnet"
+            },
+            "defaultValue": "10.0.0.0/24"
+        },
+        "VMName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la VM"
+            },
+            "defaultValue": "VM-1-Lab"
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "Description": "Taille de la VM"
+            },
+            "allowedValues": [
+                "Standard_B1s",
+                "Standard_B1ms",
+                "Standard_B2s",
+                "Standard_B2ms"
+            ],
+            "defaultValue": "Standard_B2s"
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Nom du compte admin local"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Mot de passe du compte admin local"
+            }
+        }
+    },
+    "variables": {
+        "AvailabilitySetName": "AV-Set-Lab",
+        "networkSecurityGroupName": "NSG-Lab",
+        "RDPName": "RDP",
+        "SSHName": "SSH",
+        "RDPRule": "3389",
+        "SSHrule": "22",
+        "NicName": "Nic-01-VM-Lab",
+        "windowsOffer": "WindowsServer",
+        "windowsSku": "2016-Datacenter",
+        "windowsPublisher": "MicrosoftWindowsServer",
+        "linuxOffer": "UbuntuServer",
+        "linuxSku": "12.04.5-LTS",
+        "linuxPublisher": "Canonical"
+    },
+    "resources": [
+        {
+            "comments": "Ip Publique",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddressName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "comments": "Groupe de disponibilité",
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('AvailabilitySetName')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformFaultDomainCount": 3,
+                "platformUpdateDomainCount": 5,
+                "managed": true
+            }
+        },
+        {
+            "comments": "Création d'un Virtual Network",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworkName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName1')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1AddressRange')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "Création Network Security Group",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('networkSecurityGroupName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "[if(equals(parameters('platform'), 'WinSrv'), variables('RDPName'), variables('SSHName'))]",
+                        "properties": {
+                            "description": "[if(equals(parameters('platform'), 'WinSrv'), variables('RDPName'), variables('SSHName'))]",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "[if(equals(parameters('platform'), 'WinSrv'), variables('RDPRule'), variables('SSHrule'))]",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "Création de la carte réseau",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('NicName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups',variables('networkSecurityGroupName'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses',parameters('PublicIPAddressName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "Ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName1'))]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('PublicIPAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('networkSecurityGroupName'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2017-03-30",
+            "name": "[parameters('vmName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkinterfaces/', variables('NicName'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
+            ],
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('AvailabilitySetName'))]"
+                },
+                "hardwareprofile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computername": "[parameters('vmName')]",
+                    "adminusername": "[parameters('adminUsername')]",
+                    "adminpassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[if(equals(parameters('platform'), 'WinSrv'), variables('windowsPublisher'), variables('linuxPublisher'))]",
+                        "offer": "[if(equals(parameters('platform'), 'WinSrv'), variables('windowsOffer'), variables('linuxOffer'))]",
+                        "version": "latest",
+                        "sku": "[if(equals(parameters('platform'), 'WinSrv'), variables('windowsSku'), variables('linuxSku'))]"
+                    },
+                    "osdisk": {
+                        "name": "[concat(parameters('platform'), '-osDisk')]",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "Standard_LRS"
+                        },
+                        "caching": "ReadWrite"
+                    }
+                },
+                "networkprofile": {
+                    "networkinterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkinterfaces', variables('NicName'))]"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
