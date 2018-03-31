@@ -1,0 +1,302 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "0.0.1.0",
+    "parameters": {
+        "PublicIPAddressName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la Ressource IP Publique"
+            },
+            "defaultValue": "Ip-Publique-VM-Lab"
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du VirtualNetwork"
+            },
+            "defaultValue": "Vnet-Lab"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Plan d'adressage de Vnet"
+            },
+            "defaultValue": "10.0.0.0/16"
+        },
+        "subnetName1": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom du premier subnet"
+            },
+            "defaultValue": "Subnet-Lab"
+        },
+        "subnet1AddressRange": {
+            "type": "string",
+            "metadata": {
+                "Description": "Numéro de réseau du premier subnet"
+            },
+            "defaultValue": "10.0.0.0/24"
+        },
+        "VMName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Nom de la VM"
+            },
+            "defaultValue": "VM-1-Lab"
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "Description": "Taille de la VM"
+            },
+            "allowedValues": [
+                "Standard_B1s",
+                "Standard_B1ms",
+                "Standard_B2s",
+                "Standard_B2ms",
+                "Standard_A1_v2",
+                "Standard_A2_v2"
+            ],
+            "defaultValue": "Standard_A2_v2"
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Nom du compte admin local"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Mot de passe du compte admin local"
+            }
+        },
+        "windowsserver": {
+            "type": "string",
+            "metadata": {
+                "description": "Version de l'édition de Windows Server"
+            },
+            "defaultValue": "2016-Datacenter",
+            "allowedValues": [
+                "2012-R2-Datacenter",
+                "2016-Datacenter"
+            ]
+        }
+    },
+    "variables": {
+        "AvailabilitySetName": "AV-Set-Lab",
+        "networkSecurityGroupName": "NSG-Lab",
+        "NicName": "Nic-01-VM-Lab",
+        "vmExtensionName": "dscExtension",
+        "modulesUrl": "https://repositorystoragedsc.blob.core.windows.net/dsc/MonSiteWebDSCPushJSON.ps1.zip",
+        "configurationFunction": "MonSiteWebDSCPushJSON.ps1\\MonSiteWebDSCPushJSON"
+    },
+    "resources": [
+        {
+            "comments": "Ip Publique",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddressName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            }
+        },
+        {
+            "comments": "Groupe de disponibilité",
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('AvailabilitySetName')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformFaultDomainCount": 3,
+                "platformUpdateDomainCount": 5,
+                "managed": true
+            }
+        },
+        {
+            "comments": "Création d'un Virtual Network",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworkName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName1')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1AddressRange')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "Création Network Security Group",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('networkSecurityGroupName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "RDP",
+                        "properties": {
+                            "description": "RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "HTTP",
+                        "properties": {
+                            "description": "HTTP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 200,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "Création de la carte réseau",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('NicName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups',variables('networkSecurityGroupName'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses',parameters('PublicIPAddressName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "Ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName1'))]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('PublicIPAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('networkSecurityGroupName'))]"
+                }
+            }
+        },
+        {
+            "comments": "Créetion de la VM",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('VMName')]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', variables('AvailabilitySetName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('AvailabilitySetName'))]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('VMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[parameters('windowsserver')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat('OsDisk-',parameters('VMName'))]",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "comments": "Auto ShutDown de la VM",
+            "type": "microsoft.devtestlab/schedules",
+            "name": "[concat('shutdown-computevm-', parameters('VMName'))]",
+            "apiVersion": "2016-05-15",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('VMName'))]"
+            ],
+            "properties": {
+                "status": "Enabled",
+                "taskType": "ComputeVmShutdownTask",
+                "dailyRecurrence": {
+                    "time": "1900"
+                },
+                "timeZoneId": "Romance Standard Time",
+                "notificationSettings": {
+                    "status": "Disabled",
+                    "timeInMinutes": 30
+                },
+                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('VMName'))]",
+                "provisioningState": "Succeeded",
+                "uniqueIdentifier": "73c705cd-419e-43b1-809c-6330bea66748"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('VmName'),'/', variables('vmExtensionName'))]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('VmName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.19",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "ModulesUrl": "[variables('modulesUrl')]",
+                    "ConfigurationFunction": "[variables('configurationFunction')]",
+                    "Properties": {
+                        "MachineName": "[parameters('VmName')]"
+                    }
+                },
+                "protectedSettings": null
+            }
+        }
+    ]
+}
