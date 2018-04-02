@@ -1,4 +1,4 @@
-# Worshop PowerShell DSC . Création d'un site Web en mode 'Push'
+# Worshop PowerShell DSC . Création d'un site Web en mode 'Pull' avec le service Automation
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FPierre-Chesne%2Fazure%2Fmaster%2Fazure-quickstart-templates%2FWorkshop-DSC-3%2Fazuredeploysimple.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
