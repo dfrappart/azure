@@ -1,0 +1,7 @@
+{
+  "itemDisplayName": "Déploiement d'une VM Windows Server 2012r2/2016",
+  "description": "Exemple de déploiement d'une simple VM Windows Server",
+  "summary": "Ce template prends quelque minutes pour déployer un Windows Server",
+  "githubUsername": "Pierre-Chesne",
+  "dateUpdated": "2018-03-31" 
+}
